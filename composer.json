@@ -1,0 +1,20 @@
+{
+  "name": "youngsterxyf/rss-world",
+  "description": "A rss aggregation service based on Slim and Vue.js",
+  "keywords": ["microframework","rest","router"],
+  "homepage": "http://github.com/youngsterxyf/rss-world",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "youngsterxyf",
+      "email": "sas.198708@gmail.com",
+      "homepage": "http://youngsterxyf.github.io"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "monolog/monolog": "1.*",
+    "slim/slim": "2.*",
+    "rmccue/requests": ">=1.0"
+  }
+}
