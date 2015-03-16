@@ -32,6 +32,14 @@ $app->get('/', function () {
     return true;
 });
 
+$app->map('/login', function () {
+
+})->via('GET', 'POST');
+
+$app->post('/logout', function () {
+
+});
+
 // 新建订阅
 $app->post('/subscribe', function () use ($app) {
     return Handlers::subscribeFeed($app);
