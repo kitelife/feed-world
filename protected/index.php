@@ -9,14 +9,21 @@
 require '../vendor/autoload.php';
 require './autoload.php';
 
-use \RSSWorld\Helpers;
+use \RSSWorld\Handlers;
 
-$app = new \Slim\Slim(array());
+$app = new \Slim\Slim(require('./settings.php'));
 
 $app->container->singleton('log', function ($c) {
     $log = new \Monolog\Logger('rss-world');
     $log->pushHandler(new \Monolog\Handler\StreamHandler('../logs/app.log', \Monolog\Logger::DEBUG));
     return $log;
+});
+
+// 数据库连接
+$app->container->singleton('db', function ($c) {
+    $dbSettings = $c['settings']['database'];
+    $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s', $dbSettings['host'], $dbSettings['port'], $dbSettings['name']);
+    return new \PDO($dsn, $dbSettings['username'], $dbSettings['password'], $dbSettings['options']);
 });
 
 // 主页
@@ -27,62 +34,31 @@ $app->get('/', function () {
 
 // 新建订阅
 $app->post('/subscribe', function () use ($app) {
-    $targetURL = $app->request->post('url', '');
-    if ($targetURL === '') {
-        Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
-        return true;
-    }
-
-    $targetURL = trim($targetURL);
-    if (strpos($targetURL, 'http://') !== 0 && strpos($targetURL, 'https') !== 0) {
-        $targetURL = 'http://' . $targetURL;
-    }
-
-    $targetURLResponse = Requests::get($targetURL);
-    if (!$targetURLResponse->success) {
-        Helpers\ResponseUtils::responseError(Helpers\CodeStatus::RESOURCE_NOT_ACCESSIBLE);
-        return true;
-    }
-
-    $resourceData = new SimpleXMLElement($targetURLResponse->body, LIBXML_NOWARNING | LIBXML_NOERROR);
-
-    $resourceType = 'rss';
-    if (in_array('http://www.w3.org/2005/Atom', $resourceData->getDocNamespaces(), true)) {
-        $resourceType = 'atom';
-    } else {
-        if (!$resourceData->channel) {
-            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::NOT_VALID_RESOURCE);
-            return true;
-        }
-    }
-
-    Helpers\ResponseUtils::responseJSON($resourceData);
-
-    return true;
+    return Handlers::subscribeFeed($app);
 });
 
 // 取消订阅
-$app->post('/unsubscribe/:id', function ($id) {
-
+$app->post('/unsubscribe/:id', function ($id) use ($app) {
+    return Handlers::unsubscribe($app, $id);
 });
 
 // 资源(订阅)列表
-$app->get('/resource/', function () {
+$app->get('/feed/', function () {
 
 });
 
 // 资源的文章列表
-$app->get('/resource/:id/post', function ($id) {
+$app->get('/feed/:id/', function ($id) {
 
 });
 
 
-$app->group('/resource/:resourceID/post/:postID', function () use ($app) {
-    $app->get('/', function ($resourceID, $postID) {
+$app->group('/feed/:feedID/post/:postID', function () use ($app) {
+    $app->get('/', function ($feedID, $postID) {
 
     });
 
-    $app->post('/', function ($resourceID, $postID) {
+    $app->post('/', function ($feedID, $postID) {
         // read、unread、star、unstar
     });
 });
