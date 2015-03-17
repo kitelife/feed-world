@@ -8,7 +8,7 @@
 
 // 注册应用自己的autoload
 spl_autoload_register(function ($className) {
-    $prefix = 'RSSWorld\\';
+    $prefix = 'FeedWorld\\';
     $baseDir = __DIR__ . '/';
     $len = strlen($prefix);
     if (strncmp($prefix, $className, $len) !== 0) {

@@ -9,13 +9,13 @@
 require '../vendor/autoload.php';
 require './autoload.php';
 
-use \RSSWorld\Handlers;
-use \RSSWorld\Helpers;
+use \FeedWorld\Handlers;
+use \FeedWorld\Helpers;
 
 $app = new \Slim\Slim(require('./settings.php'));
 
 // 这个中间件必须比SessionCookie先add
-$app->add(new RSSWorld\Middlwares\UserSession());
+$app->add(new FeedWorld\Middlwares\UserSession());
 
 $app->add(new \Slim\Middleware\SessionCookie(array(
         'expires' => '20 minutes',

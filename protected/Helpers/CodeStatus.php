@@ -6,7 +6,7 @@
  * Time: 15:38
  */
 
-namespace RSSWorld\Helpers;
+namespace FeedWorld\Helpers;
 
 class CodeStatus
 {

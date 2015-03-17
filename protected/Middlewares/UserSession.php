@@ -6,18 +6,18 @@
  * Time: 14:46
  */
 
-namespace RSSWorld\Middlwares;
+namespace FeedWorld\Middlwares;
 
 class UserSession extends \Slim\Middleware
 {
     public function call()
     {
         $app = $this->app;
-        if (\RSSWorld\Helpers\ResponseUtils::checkLogin($app) === false
+        if (\FeedWorld\Helpers\ResponseUtils::checkLogin($app) === false
             || strcmp($app->request->getScriptName(), '/user/login') !== 0
         ) {
             if ($app->request->isAjax()) {
-                \RSSWorld\Helpers\ResponseUtils::responseError(\RSSWorld\Helpers\CodeStatus::REQUIRE_LOGIN);
+                \FeedWorld\Helpers\ResponseUtils::responseError(\FeedWorld\Helpers\CodeStatus::REQUIRE_LOGIN);
                 return false;
             }
             $this->app->response->redirect('/user/login', 302);

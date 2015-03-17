@@ -6,9 +6,9 @@
  * Time: 17:53
  */
 
-namespace RSSWorld\Handlers;
+namespace FeedWorld\Handlers;
 
-use \RSSWorld\Helpers;
+use \FeedWorld\Helpers;
 
 class FeedHandlers
 {

@@ -6,7 +6,7 @@
  * Time: 13:12
  */
 
-namespace RSSWorld\Handlers;
+namespace FeedWorld\Handlers;
 
 
 class UserHandlers {

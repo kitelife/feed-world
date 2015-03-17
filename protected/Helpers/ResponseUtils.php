@@ -6,7 +6,7 @@
  * Time: 15:30
  */
 
-namespace RSSWorld\Helpers;
+namespace FeedWorld\Helpers;
 
 class ResponseUtils
 {
