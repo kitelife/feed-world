@@ -17,6 +17,8 @@ class CodeStatus
     const NOT_VALID_RESOURCE = 1003; // 无效资源
     const SYSTEM_ERROR = 1004; // 系统错误
     const FEED_EXISTED = 1005; // feed已存在
+    const WRONG_PARAMETER = 1006; // 参数错误
+    const REQUIRE_LOGIN = 1007; // 请先登录
 
     public static $statusCode = array(
         self::OK => '成功',
@@ -25,5 +27,7 @@ class CodeStatus
         self::NOT_VALID_RESOURCE => '无效资源',
         self::SYSTEM_ERROR => '系统错误',
         self::FEED_EXISTED => 'Feed已存在',
+        self::WRONG_PARAMETER => '请求参数错误',
+        self::REQUIRE_LOGIN => '请先登录',
     );
 }

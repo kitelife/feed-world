@@ -10,8 +10,22 @@ require '../vendor/autoload.php';
 require './autoload.php';
 
 use \RSSWorld\Handlers;
+use \RSSWorld\Helpers;
 
 $app = new \Slim\Slim(require('./settings.php'));
+
+$app->add(new \Slim\Middleware\SessionCookie(array(
+        'expires' => '20 minutes',
+        'path' => '/',
+        'domain' => null,
+        'secure' => false,
+        'httponly' => false,
+        'name' => 'slim_session',
+        'secret' => '1qazXSW@',
+        'cipher' => MCRYPT_RIJNDAEL_256,
+        'cipher_mode' => MCRYPT_MODE_CBC
+    ))
+);
 
 $app->container->singleton('log', function ($c) {
     $log = new \Monolog\Logger('rss-world');
@@ -26,49 +40,88 @@ $app->container->singleton('db', function ($c) {
     return new \PDO($dsn, $dbSettings['username'], $dbSettings['password'], $dbSettings['options']);
 });
 
+/*
+ * 所有登录状态检查的逻辑应放在一个中间件中去实现
+ * */
+
 // 主页
-$app->get('/', function () {
-    echo '欢迎来到RSS世界！';
+$app->get('/', function () use ($app) {
+    if (Helpers\ResponseUtils::checkLogin($app)) {
+        // 显示HTML
+
+    }
+
+    $app->response->redirect('/user/login', 302);
     return true;
 });
 
-$app->map('/login', function () {
+$app->map('/user/login', function () use ($app) {
+    if (Helpers\ResponseUtils::checkLogin($app)) {
+        $app->response->redirect('/feed', 302);
+    }
+    if ($app->request->isGet()) {
 
+    } else {
+        if ($app->request->isPost()) {
+
+        }
+    }
 })->via('GET', 'POST');
 
-$app->post('/logout', function () {
-
+$app->post('/user/logout', function () use ($app) {
+    unset($_SESSION['user_id']);
+    $app->response->redirect('/user/login', 302);
+    return true;
 });
 
 // 新建订阅
-$app->post('/subscribe', function () use ($app) {
-    return Handlers::subscribeFeed($app);
+$app->post('/feed/subscribe', function () use ($app) {
+    if (Helpers\ResponseUtils::checkLogin($app)) {
+        Handlers\FeedHandlers::subscribeFeed($app);
+        return true;
+    }
+    $app->response->redirect('/user/login', 302);
+    return true;
 });
 
 // 取消订阅
-$app->post('/unsubscribe/:id', function ($id) use ($app) {
-    return Handlers::unsubscribe($app, $id);
+$app->post('/feed/:id/unsubscribe', function ($id) use ($app) {
+    if (Helpers\ResponseUtils::checkLogin($app)) {
+        return Handlers\FeedHandlers::unsubscribe($app, $id);
+    }
+    $app->response->redirect('/user/login', 302);
+    return true;
 });
 
 // 资源(订阅)列表
-$app->get('/feed/', function () {
+$app->get('/feed/', function () use ($app) {
+    if (Helpers\ResponseUtils::checkLogin($app)) {
+        Handlers\FeedHandlers::ListFeed($app);
+        return true;
+    }
 
+    Helpers\ResponseUtils::responseError(Helpers\CodeStatus::REQUIRE_LOGIN);
+    return true;
 });
 
 // 资源的文章列表
-$app->get('/feed/:id/', function ($id) {
-
+$app->get('/feed/:feedID/', function ($feedID) use ($app) {
+    if (Helpers\ResponseUtils::checkLogin($app)) {
+        Handlers\PostHandlers::ListPost($app, $feedID);
+        return true;
+    }
+    Helpers\ResponseUtils::responseError(Helpers\CodeStatus::REQUIRE_LOGIN);
+    return true;
 });
 
 
-$app->group('/feed/:feedID/post/:postID', function () use ($app) {
-    $app->get('/', function ($feedID, $postID) {
-
-    });
-
-    $app->post('/', function ($feedID, $postID) {
-        // read、unread、star、unstar
-    });
+$app->post('/feed/:feedID/post/:postID', function ($feedID, $postID) use ($app) {
+    if (Helpers\ResponseUtils::checkLogin($app)) {
+        Handlers\PostHandlers::ChangePostStatus($app, $feedID, $postID);
+        return true;
+    }
+    Helpers\ResponseUtils::responseError(Helpers\CodeStatus::REQUIRE_LOGIN);
+    return true;
 });
 
 $app->run();

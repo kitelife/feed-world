@@ -6,11 +6,11 @@
  * Time: 17:53
  */
 
-namespace RSSWorld;
+namespace RSSWorld\Handlers;
 
 use \RSSWorld\Helpers;
 
-class Handlers
+class FeedHandlers
 {
 
     public static function subscribeFeed($app)
@@ -83,10 +83,11 @@ class Handlers
         // 存入数据库
         $app->db->beginTransaction();
         try {
-            $insertNewFeed = 'INSERT INTO feed (`title`, `site_url`, `feed_url`, `feed_type`, `feed_updated`) '
-                . 'VALUES (:title, :site_url, :feed_url, :feed_type, :feed_updated)';
+            $insertNewFeed = 'INSERT INTO feed (`user_id`, `title`, `site_url`, `feed_url`, `feed_type`, `feed_updated`) '
+                . 'VALUES (:user_id, :title, :site_url, :feed_url, :feed_type, :feed_updated)';
             $stmt = $app->db->prepare($insertNewFeed);
             $stmt->execute(array(
+                ':user_id' => $_SESSION['user_id'],
                 ':title' => $thisFeed['title'],
                 ':site_url' => $thisFeed['link'],
                 ':feed_url' => $thisFeed['feed'],
@@ -117,6 +118,44 @@ class Handlers
 
     public static function unsubscribe($app, $id)
     {
+        // 先检查一下$id所对应的feed是否属于当前用户
+        $checkBelongTo = 'SELECT COUNT(*) FROM feed WHERE feed_id = :feed_id AND user_id := :user_id';
+        $stmt = $app->db->prepare($checkBelongTo);
+        $stmt->execute(array(
+            ':feed_id' => $id,
+            ':user_id' => $_SESSION['user_id'],
+        ));
+        if ($stmt->fetchColumn() === 0) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::WRONG_PARAMETER);
+            return true;
+        }
+        $app->db->beginTransaction();
+        try {
+            $deletePosts = 'DELETE FROM post WHERE feed_id = :feed_id';
+            $stmt = $app->db->prepare($deletePosts);
+            $stmt->execute(array(':feed_id' => $id));
+
+            $deleteFeed = 'DELETE FROM feed WHERE feed_id = :feed_id';
+            $stmt = $app->prepare($deleteFeed);
+            $stmt->execute(array(':feed_id' => $id));
+
+            $app->db->commit();
+        } catch (\Exception $e) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::SYSTEM_ERROR);
+
+            $app->db->rollBack();
+        }
+        return true;
+    }
+
+    public static function ListFeed($app)
+    {
+        $selectFeeds = 'SELECT * FROM feed WHERE user_id = :user_id';
+        $stmt = $app->db->prepare($selectFeeds);
+        $stmt->execute(array(':user_id' => $_SESSION['user_id']));
+        $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        Helpers\ResponseUtils::responseJSON($feeds);
         return true;
     }
 }
