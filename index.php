@@ -55,18 +55,26 @@ $app->get('/', function () use ($app) {
     return true;
 });
 
-$app->map('/user/login', function () use ($app) {
-    if ($app->request->isGet()) {
-        if ($app->request->get('type', null) === null){
-            echo file_get_contents('./templates/login.html');
-        } else {
+$app->get('/user/login', function () use ($app) {
+    $loginType = $app->request->get('type', null);
+    if ($loginType === null){
+        echo file_get_contents('./templates/login.html');
+    } else {
+        if ($loginType === 'github') {
             $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app), 302);
         }
-    } elseif ($app->request->isPost()) {
-        Handlers\UserHandlers::userLogin($app);
+        if ($loginType === 'weibo') {
+
+        }
     }
+    if (Handlers\UserHandlers::userLogin($app)) {
+        $app->response->redirect('/', 302);
+    }
+    // add flash message
+    //
+    $app->response->redirect('/user/login', 302);
     return true;
-})->via('GET', 'POST');
+});
 
 $app->post('/user/logout', function () use ($app) {
     unset($_SESSION['user_id']);
