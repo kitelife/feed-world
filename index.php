@@ -57,10 +57,9 @@ $app->get('/', function () use ($app) {
 
 $app->get('/user/login', function () use ($app) {
     $loginType = $app->request->get('type', null);
-    if ($loginType === null){
-        echo file_get_contents('./templates/login.html');
-        return true;
-    } else {
+    $githubCode = $app->request->get('code', null);
+
+    if ($loginType !== null) {
         if ($loginType === 'github') {
             $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app), 302);
         }
@@ -68,12 +67,16 @@ $app->get('/user/login', function () use ($app) {
 
         }
     }
-    if (Handlers\UserHandlers::userLogin($app)) {
-        $app->response->redirect('/', 302);
+    if ($githubCode !== null) {
+        if (Handlers\UserHandlers::userLogin($app)) {
+            $app->response->redirect('/', 302);
+        }
+        // add flash message
+        //
+        $app->response->redirect('/user/login', 302);
     }
-    // add flash message
-    //
-    $app->response->redirect('/user/login', 302);
+
+    echo file_get_contents('./templates/login.html');
     return true;
 });
 
