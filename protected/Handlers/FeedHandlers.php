@@ -148,7 +148,7 @@ class FeedHandlers
         return true;
     }
 
-    public static function ListFeed($app)
+    public static function listFeed($app)
     {
         $selectFeeds = 'SELECT * FROM feed WHERE user_id = :user_id';
         $stmt = $app->db->prepare($selectFeeds);

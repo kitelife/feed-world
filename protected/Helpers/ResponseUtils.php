@@ -31,10 +31,8 @@ class ResponseUtils
         return true;
     }
 
-    public static function checkLogin($app) {
-        if (empty($_SESSION['user_id'])) {
-            return false;
-        }
-        return true;
+    public static function checkLogin($app)
+    {
+        return isset($_SESSION['user_id']);
     }
 }

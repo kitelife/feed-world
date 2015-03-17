@@ -13,7 +13,7 @@ use \RSSWorld\Helpers;
 class PostHandlers
 {
 
-    public static function ListPost($app, $feedID)
+    public static function listPost($app, $feedID)
     {
         $selectPosts = 'SELECT post.* FROM post, feed WHERE post.feed_id = :feed_id AND post.feed_id = feed.feed_id AND feed.user_id = :user_id';
         $stmt = $app->db->query($selectPosts);
@@ -27,7 +27,7 @@ class PostHandlers
         return true;
     }
 
-    public static function ChangePostStatus($app, $feedID, $postID)
+    public static function changePostStatus($app, $feedID, $postID)
     {
         $setRead = $app->request->post('set_read');
         $setStar = $app->request->post('set_star');

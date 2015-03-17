@@ -14,6 +14,9 @@ use \RSSWorld\Helpers;
 
 $app = new \Slim\Slim(require('./settings.php'));
 
+// 这个中间件必须比SessionCookie先add
+$app->add(new RSSWorld\Middlwares\UserSession());
+
 $app->add(new \Slim\Middleware\SessionCookie(array(
         'expires' => '20 minutes',
         'path' => '/',
@@ -46,19 +49,11 @@ $app->container->singleton('db', function ($c) {
 
 // 主页
 $app->get('/', function () use ($app) {
-    if (Helpers\ResponseUtils::checkLogin($app)) {
-        // 显示HTML
-
-    }
-
-    $app->response->redirect('/user/login', 302);
+    // 显示HTML
     return true;
 });
 
 $app->map('/user/login', function () use ($app) {
-    if (Helpers\ResponseUtils::checkLogin($app)) {
-        $app->response->redirect('/feed', 302);
-    }
     if ($app->request->isGet()) {
 
     } else {
@@ -76,51 +71,31 @@ $app->post('/user/logout', function () use ($app) {
 
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
-    if (Helpers\ResponseUtils::checkLogin($app)) {
-        Handlers\FeedHandlers::subscribeFeed($app);
-        return true;
-    }
-    $app->response->redirect('/user/login', 302);
+    Handlers\FeedHandlers::subscribeFeed($app);
     return true;
 });
 
 // 取消订阅
 $app->post('/feed/:id/unsubscribe', function ($id) use ($app) {
-    if (Helpers\ResponseUtils::checkLogin($app)) {
-        return Handlers\FeedHandlers::unsubscribe($app, $id);
-    }
-    $app->response->redirect('/user/login', 302);
+    Handlers\FeedHandlers::unsubscribe($app, $id);
     return true;
 });
 
 // 资源(订阅)列表
 $app->get('/feed/', function () use ($app) {
-    if (Helpers\ResponseUtils::checkLogin($app)) {
-        Handlers\FeedHandlers::ListFeed($app);
-        return true;
-    }
-
-    Helpers\ResponseUtils::responseError(Helpers\CodeStatus::REQUIRE_LOGIN);
+    Handlers\FeedHandlers::listFeed($app);
     return true;
 });
 
 // 资源的文章列表
 $app->get('/feed/:feedID/', function ($feedID) use ($app) {
-    if (Helpers\ResponseUtils::checkLogin($app)) {
-        Handlers\PostHandlers::ListPost($app, $feedID);
-        return true;
-    }
-    Helpers\ResponseUtils::responseError(Helpers\CodeStatus::REQUIRE_LOGIN);
+    Handlers\PostHandlers::listPost($app, $feedID);
     return true;
 });
 
 
 $app->post('/feed/:feedID/post/:postID', function ($feedID, $postID) use ($app) {
-    if (Helpers\ResponseUtils::checkLogin($app)) {
-        Handlers\PostHandlers::ChangePostStatus($app, $feedID, $postID);
-        return true;
-    }
-    Helpers\ResponseUtils::responseError(Helpers\CodeStatus::REQUIRE_LOGIN);
+    Handlers\PostHandlers::changePostStatus($app, $feedID, $postID);
     return true;
 });
 
