@@ -13,7 +13,7 @@ class UserSession extends \Slim\Middleware
     public function call()
     {
         $app = $this->app;
-        if (\FeedWorld\Helpers\ResponseUtils::checkLogin($app) === false
+        if (\FeedWorld\Helpers\CommonUtils::checkLogin($app) === false
             || strcmp($app->request->getScriptName(), '/user/login') !== 0
         ) {
             if ($app->request->isAjax()) {

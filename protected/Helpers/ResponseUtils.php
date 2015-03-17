@@ -30,9 +30,4 @@ class ResponseUtils
 
         return true;
     }
-
-    public static function checkLogin($app)
-    {
-        return isset($_SESSION['user_id']);
-    }
 }

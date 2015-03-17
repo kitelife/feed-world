@@ -1,4 +1,4 @@
-USE rss_world;
+USE feed_world;
 
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` BIGINT(20) NOT NULL AUTO_INCREMENT
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `feed` (
   COMMENT 'feed链接',
   `feed_type`    VARCHAR(10)   NOT NULL DEFAULT 'rss'
   COMMENT 'feed类型',
-  `feed_updated` VARCHAR(50)   NOT NULL DEFAULT 0
+  `feed_updated` TIMESTAMP     NULL     DEFAULT 0
   COMMENT 'feed更新时间',
   PRIMARY KEY (`feed_id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `post` (
   COMMENT '文章主题',
   `link`         VARCHAR(1024) NOT NULL DEFAULT ''
   COMMENT '文章链接',
-  `publish_date` VARCHAR(50)   NOT NULL DEFAULT 0
+  `publish_date` TIMESTAMP     NULL     DEFAULT 0
   COMMENT '发布时间',
   `is_read`      BOOLEAN       NOT NULL DEFAULT FALSE
   COMMENT '是否已读',

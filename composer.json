@@ -1,8 +1,8 @@
 {
-  "name": "youngsterxyf/rss-world",
-  "description": "A rss aggregation service based on Slim and Vue.js",
-  "keywords": ["microframework","rest","router"],
-  "homepage": "http://github.com/youngsterxyf/rss-world",
+  "name": "youngsterxyf/feed-world",
+  "description": "A feed aggregation service based on Slim and Vue.js",
+  "keywords": ["slim","vue.js","service"],
+  "homepage": "http://github.com/youngsterxyf/feed-world",
   "license": "MIT",
   "authors": [
     {

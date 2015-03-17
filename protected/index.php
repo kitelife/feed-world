@@ -87,6 +87,11 @@ $app->get('/feed/', function () use ($app) {
     return true;
 });
 
+$app->post('/feed/:feedID/update', function ($feedID) use ($app) {
+    FeedWorld\Handlers\FeedHandlers::updateFeed($app, $feedID);
+    return true;
+});
+
 // 资源的文章列表
 $app->get('/feed/:feedID/', function ($feedID) use ($app) {
     Handlers\PostHandlers::listPost($app, $feedID);

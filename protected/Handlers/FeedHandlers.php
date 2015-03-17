@@ -13,6 +13,21 @@ use \FeedWorld\Helpers;
 class FeedHandlers
 {
 
+    protected static function insertPosts($posts, $feedID, $app)
+    {
+        $insertNewPost = 'INSERT INTO post (`feed_id`, `title`, `link`, `publish_date`)'
+            . 'VALUES (:feed_id, :title, :link, :publish_date)';
+        $stmt = $app->db->prepare($insertNewPost);
+        foreach ($posts as $onePost) {
+            $stmt->execute(array(
+                ':feed_id' => $feedID,
+                ':title' => $onePost['title'],
+                ':link' => $onePost['link'],
+                ':publish_date' => $onePost['publish_date'],
+            ));
+        }
+    }
+
     public static function subscribeFeed($app)
     {
         $targetURL = $app->request->post('url', '');
@@ -26,51 +41,11 @@ class FeedHandlers
             $targetURL = 'http://' . $targetURL;
         }
 
-        $targetURLResponse = \Requests::get($targetURL);
-        if (!$targetURLResponse->success) {
-            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::RESOURCE_NOT_ACCESSIBLE);
+        $thisFeed = \FeedWorld\Helpers\CommonUtils::fetchFeed($targetURL);
+        if ($thisFeed === false) {
             return true;
         }
 
-        $feedData = new \SimpleXMLElement($targetURLResponse->body, LIBXML_NOWARNING | LIBXML_NOERROR);
-
-        // 如果带channel节点，则应该是rss
-        if ($feedData->channel) {
-            $feedType = 'rss';
-        } else {
-            $feedType = 'atom';
-        }
-
-        $thisFeed = array(
-            'type' => $feedType,
-            'feed' => $targetURL,
-            'post' => array(),
-        );
-        if ($feedType === 'rss') {
-            $thisFeed['title'] = (string)$feedData->channel->title;
-            $thisFeed['link'] = (string)$feedData->channel->link;
-            $thisFeed['updated_date'] = (string)$feedData->channel->lastBuildDate;
-
-            foreach ($feedData->channel->item as $item) {
-                array_push($thisFeed['post'], array(
-                    'title' => (string)$item->title,
-                    'link' => (string)$item->link,
-                    'publish_date' => (string)$item->pubDate,
-                ));
-            }
-        } else {
-            $thisFeed['title'] = (string)$feedData->title;
-            $thisFeed['link'] = (string)$feedData->id;
-            $thisFeed['updated_date'] = (string)$feedData->updated;
-
-            foreach ($feedData->entry as $entry) {
-                array_push($thisFeed['post'], array(
-                    'title' => (string)$entry->title,
-                    'link' => (string)$entry->id,
-                    'publish_date' => (string)$entry->published,
-                ));
-            }
-        }
         // 先看看数据库中是否已经存在
         $checkFeedExist = 'SELECT COUNT(*) FROM feed WHERE site_url = :site_url';
         $stmt = $app->db->prepare($checkFeedExist);
@@ -96,17 +71,8 @@ class FeedHandlers
             ));
             $newFeedID = $app->db->lastInsertId();
 
-            $insertNewPost = 'INSERT INTO post (`feed_id`, `title`, `link`, `publish_date`)'
-                . 'VALUES (:feed_id, :title, :link, :publish_date)';
-            $stmt = $app->db->prepare($insertNewPost);
-            foreach ($thisFeed['post'] as $post) {
-                $stmt->execute(array(
-                    ':feed_id' => $newFeedID,
-                    ':title' => $post['title'],
-                    ':link' => $post['link'],
-                    ':publish_date' => $post['publish_date'],
-                ));
-            }
+            self::insertPosts($thisFeed['post'], $newFeedID, $app);
+
             $app->db->commit();
         } catch (\Exception $e) {
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::SYSTEM_ERROR);
@@ -153,9 +119,47 @@ class FeedHandlers
         $selectFeeds = 'SELECT * FROM feed WHERE user_id = :user_id';
         $stmt = $app->db->prepare($selectFeeds);
         $stmt->execute(array(':user_id' => $_SESSION['user_id']));
-        $feeds = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $feeds = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         Helpers\ResponseUtils::responseJSON($feeds);
+        return true;
+    }
+
+    public static function updateFeed($app, $feedID)
+    {
+        $selectFeedURL = 'SELECT feed_url, feed_updated FROM feed WHERE user_id=:user_id AND feed_id=:feed_id';
+        $stmt = $app->db->prepare($selectFeedURL);
+        $stmt->execute(array(
+            ':user_id' => $_SESSION['user_id'],
+            ':feed_id' => $feedID,
+        ));
+        $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (empty($oneRow)) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
+            return true;
+        }
+        $newFeedData = \FeedWorld\Helpers\CommonUtils::fetchFeed($oneRow['feed_url']);
+        if ($newFeedData === false) {
+            return true;
+        }
+
+        if ($newFeedData['updated_date'] > $oneRow['feed_updated']) {
+            // 选出原数据中最新一篇post的发布时间
+            $selectLatestPostTime = 'SELECT publish_date FROM post WHERE feed_id=:feed_id ORDER BY publish_date DESC LIMIT 1';
+            $stmt = $app->db->prepare($selectLatestPostTime);
+            $stmt->execute(array(':feed_id' => $feedID));
+            $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            $latestPostTime = empty($oneRow) ? 0 : $oneRow['publish_date'];
+            $newPosts = array();
+            foreach ($newFeedData['post'] as $onePost) {
+                if ($onePost['publish_date'] > $latestPostTime) {
+                    $newPosts[] = $onePost;
+                }
+            }
+            self::insertPosts($newPosts, $feedID, $app);
+        }
+        Helpers\ResponseUtils::responseJSON(Helpers\CodeStatus::OK);
         return true;
     }
 }
