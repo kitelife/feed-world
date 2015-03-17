@@ -6,15 +6,16 @@
  * Time: 14:46
  */
 
-namespace FeedWorld\Middlwares;
+namespace FeedWorld\Middlewares;
 
 class UserSession extends \Slim\Middleware
 {
     public function call()
     {
         $app = $this->app;
+        $app->log->debug($app->request->getPath());
         if (\FeedWorld\Helpers\CommonUtils::checkLogin($app) === false
-            || strcmp($app->request->getScriptName(), '/user/login') !== 0
+            && strcmp($app->request->getPath(), '/user/login') !== 0
         ) {
             if ($app->request->isAjax()) {
                 \FeedWorld\Helpers\ResponseUtils::responseError(\FeedWorld\Helpers\CodeStatus::REQUIRE_LOGIN);

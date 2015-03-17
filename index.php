@@ -6,16 +6,16 @@
  * Time: 14:52
  */
 
-require '../vendor/autoload.php';
-require './autoload.php';
+require './vendor/autoload.php';
+require './protected/autoload.php';
 
 use \FeedWorld\Handlers;
 use \FeedWorld\Helpers;
 
-$app = new \Slim\Slim(require('./settings.php'));
+$app = new \Slim\Slim(require('./protected/settings.php'));
 
 // 这个中间件必须比SessionCookie先add
-$app->add(new FeedWorld\Middlwares\UserSession());
+$app->add(new \FeedWorld\Middlewares\UserSession());
 
 $app->add(new \Slim\Middleware\SessionCookie(array(
         'expires' => '20 minutes',
@@ -32,7 +32,7 @@ $app->add(new \Slim\Middleware\SessionCookie(array(
 
 $app->container->singleton('log', function ($c) {
     $log = new \Monolog\Logger('rss-world');
-    $log->pushHandler(new \Monolog\Handler\StreamHandler('../logs/app.log', \Monolog\Logger::DEBUG));
+    $log->pushHandler(new \Monolog\Handler\StreamHandler('./logs/app.log', \Monolog\Logger::DEBUG));
     return $log;
 });
 
@@ -49,18 +49,17 @@ $app->container->singleton('db', function ($c) {
 
 // 主页
 $app->get('/', function () use ($app) {
-    // 显示HTML
+    echo file_get_contents('./templates/index.html');
     return true;
 });
 
 $app->map('/user/login', function () use ($app) {
     if ($app->request->isGet()) {
-
-    } else {
-        if ($app->request->isPost()) {
-
-        }
+        echo file_get_contents('./templates/login.html');
+    } elseif ($app->request->isPost()) {
+        Handlers\UserHandlers::userLogin($app);
     }
+    return true;
 })->via('GET', 'POST');
 
 $app->post('/user/logout', function () use ($app) {
@@ -88,7 +87,7 @@ $app->get('/feed/', function () use ($app) {
 });
 
 $app->post('/feed/:feedID/update', function ($feedID) use ($app) {
-    FeedWorld\Handlers\FeedHandlers::updateFeed($app, $feedID);
+    Handlers\FeedHandlers::updateFeed($app, $feedID);
     return true;
 });
 

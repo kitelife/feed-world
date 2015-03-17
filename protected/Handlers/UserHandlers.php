@@ -9,6 +9,11 @@
 namespace FeedWorld\Handlers;
 
 
-class UserHandlers {
+class UserHandlers
+{
 
+    public static function userLogin($app)
+    {
+
+    }
 }
