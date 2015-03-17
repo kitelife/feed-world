@@ -40,9 +40,13 @@ $app->container->singleton('log', function ($c) {
 
 // 数据库连接
 $app->container->singleton('db', function ($c) {
+    /*
     $dbSettings = $c['settings']['database'];
     $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s', $dbSettings['host'], $dbSettings['port'], $dbSettings['name']);
     return new \PDO($dsn, $dbSettings['username'], $dbSettings['password'], $dbSettings['options']);
+    */
+    $dsn = 'sqlite:./feed_world.sq3';
+    return new \PDO($dsn);
 });
 
 /*
