@@ -12,6 +12,8 @@ require './protected/autoload.php';
 use \FeedWorld\Handlers;
 use \FeedWorld\Helpers;
 
+date_default_timezone_set('Asia/Shanghai');
+
 $app = new \Slim\Slim(require('./protected/settings.php'));
 
 // 这个中间件必须比SessionCookie先add
@@ -55,7 +57,11 @@ $app->get('/', function () use ($app) {
 
 $app->map('/user/login', function () use ($app) {
     if ($app->request->isGet()) {
-        echo file_get_contents('./templates/login.html');
+        if ($app->request->get('type', null) === null){
+            echo file_get_contents('./templates/login.html');
+        } else {
+            $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app), 302);
+        }
     } elseif ($app->request->isPost()) {
         Handlers\UserHandlers::userLogin($app);
     }
