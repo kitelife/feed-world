@@ -59,6 +59,7 @@ $app->get('/user/login', function () use ($app) {
     $loginType = $app->request->get('type', null);
     if ($loginType === null){
         echo file_get_contents('./templates/login.html');
+        return true;
     } else {
         if ($loginType === 'github') {
             $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app), 302);
