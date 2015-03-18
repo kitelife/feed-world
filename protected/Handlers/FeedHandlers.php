@@ -47,7 +47,7 @@ class FeedHandlers
         $checkFeedExist = 'SELECT COUNT(*) FROM feed WHERE site_url = :site_url';
         $stmt = $app->db->prepare($checkFeedExist);
         $stmt->execute(array(':site_url' => $thisFeed['link']));
-        if ($stmt->fetchColumn() > 0) {
+        if (intval($stmt->fetchColumn()) > 0) {
             $exceptionCode = Helpers\CodeStatus::FEED_EXISTED;
             throw new \Exception($exceptionCode, Helpers\CodeStatus::$statusCode[$exceptionCode]);
         }

@@ -61,9 +61,17 @@ class CommonUtils
                     $publishedTime = (string)$entry->updated;
                 }
 
+                $postLink = '';
+                if (isset($entry->link['href'])) {
+                    $postLink = (string)$entry->link['href'];
+                }
+                if ($postLink === '') {
+                    $postLink = (string)$entry->id;
+                }
+
                 array_push($thisFeed['post'], array(
                     'title' => (string)$entry->title,
-                    'link' => (string)$entry->id,
+                    'link' => $postLink,
                     'publish_date' => date('Y-m-d H:i:s', strtotime($publishedTime)),
                 ));
             }
