@@ -20,7 +20,7 @@ $app = new \Slim\Slim(require('./protected/settings.php'));
 $app->add(new \FeedWorld\Middlewares\UserSession());
 
 $app->add(new \Slim\Middleware\SessionCookie(array(
-        'expires' => '20 minutes',
+        'expires' => '1 year',
         'path' => '/',
         'domain' => null,
         'secure' => false,
@@ -86,6 +86,11 @@ $app->map('/user/logout', function () use ($app) {
     return true;
 })->via('GET', 'POST');
 
+$app->get('/user/profile', function () use ($app) {
+    FeedWorld\Helpers\ResponseUtils::responseJSON(Handlers\UserHandlers::getUserProfile($app));
+    return true;
+});
+
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
     Handlers\FeedHandlers::subscribeFeed($app);
@@ -99,7 +104,7 @@ $app->post('/feed/:id/unsubscribe', function ($id) use ($app) {
 });
 
 // 资源(订阅)列表
-$app->get('/feed/', function () use ($app) {
+$app->get('/feed', function () use ($app) {
     Handlers\FeedHandlers::listFeed($app);
     return true;
 });
@@ -110,7 +115,7 @@ $app->post('/feed/:feedID/update', function ($feedID) use ($app) {
 });
 
 // 资源的文章列表
-$app->get('/feed/:feedID/', function ($feedID) use ($app) {
+$app->get('/feed/:feedID', function ($feedID) use ($app) {
     Handlers\PostHandlers::listPost($app, $feedID);
     return true;
 });

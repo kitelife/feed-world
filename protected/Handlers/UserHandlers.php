@@ -12,7 +12,8 @@ namespace FeedWorld\Handlers;
 class UserHandlers
 {
 
-    protected static function newUser($app, $userInfo) {
+    protected static function newUser($app, $userInfo)
+    {
         $insertNewUser = 'INSERT INTO user (`from_where`, `id_from`, `name_from`) VALUES (:from_where, :id_from, :name_from)';
         $stmt = $app->db->prepare($insertNewUser);
         $stmt->execute(array(
@@ -52,5 +53,14 @@ class UserHandlers
         }
 
         return false;
+    }
+
+    public static function getUserProfile($app)
+    {
+        $selectUserProfile = 'SELECT * FROM user WHERE user_id=:user_id';
+        $stmt = $app->db->prepare($selectUserProfile);
+        $stmt->execute(array(':user_id' => $_SESSION['user_id']));
+        $myProfile = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $myProfile;
     }
 }
