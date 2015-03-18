@@ -56,10 +56,15 @@ class CommonUtils
             $thisFeed['updated_date'] = date("Y-m-d H:i:s", strtotime((string)$feedData->updated));
 
             foreach ($feedData->entry as $entry) {
+                $publishedTime = (string)$entry->published;
+                if (empty($publishedTime)) {
+                    $publishedTime = (string)$entry->updated;
+                }
+
                 array_push($thisFeed['post'], array(
                     'title' => (string)$entry->title,
                     'link' => (string)$entry->id,
-                    'publish_date' => date('Y-m-d H:i:s', strtotime((string)$entry->published)),
+                    'publish_date' => date('Y-m-d H:i:s', strtotime($publishedTime)),
                 ));
             }
         }
