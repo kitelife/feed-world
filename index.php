@@ -33,7 +33,7 @@ $app->add(new \Slim\Middleware\SessionCookie(array(
 );
 
 $app->container->singleton('log', function ($c) {
-    $log = new \Monolog\Logger('rss-world');
+    $log = new \Monolog\Logger('feed-world');
     $log->pushHandler(new \Monolog\Handler\StreamHandler('./logs/app.log', \Monolog\Logger::DEBUG));
     return $log;
 });
@@ -80,11 +80,11 @@ $app->get('/user/login', function () use ($app) {
     return true;
 });
 
-$app->post('/user/logout', function () use ($app) {
+$app->map('/user/logout', function () use ($app) {
     unset($_SESSION['user_id']);
     $app->response->redirect('/user/login', 302);
     return true;
-});
+})->via('GET', 'POST');
 
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
