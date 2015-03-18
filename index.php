@@ -99,12 +99,7 @@ $app->get('/feed', function () use ($app) {
 
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
-    try {
-        $result = FeedWorld\Handlers\FeedHandlers::subscribeFeed($app);
-        FeedWorld\Helpers\ResponseUtils::responseJSON($result);
-    } catch (\Exception $e) {
-        FeedWorld\Helpers\ResponseUtils::responseError($e->getCode(), $e->getMessage());
-    }
+    Handlers\FeedHandlers::subscribeFeed($app);
     return true;
 });
 
@@ -129,11 +124,6 @@ $app->get('/feed/:feedID', function ($feedID) use ($app) {
 $app->post('/feed/:feedID/post/:postID', function ($feedID, $postID) use ($app) {
     Handlers\PostHandlers::changePostStatus($app, $feedID, $postID);
     return true;
-})->conditions(
-        array(
-            'feedID' => '\d+',
-            'postID' => '\d+'
-        )
-    );
+})->conditions(array('feedID' => '\d+', 'postID' => '\d+'));
 
 $app->run();

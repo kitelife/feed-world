@@ -32,26 +32,25 @@ class FeedHandlers
     {
         $targetURL = $app->request->post('url', '');
         if ($targetURL === '') {
-            $exceptionCode = Helpers\CodeStatus::PARAMETER_NOT_EXISTED;
-            throw new \Exception($exceptionCode, Helpers\CodeStatus::$statusCode[$exceptionCode]);
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
+            return true;
         }
-
         $targetURL = trim($targetURL);
         if (strpos($targetURL, 'http://') !== 0 && strpos($targetURL, 'https') !== 0) {
             $targetURL = 'http://' . $targetURL;
         }
-
         $thisFeed = Helpers\CommonUtils::fetchFeed($targetURL, $app->settings);
-
+        if ($thisFeed === false) {
+            return true;
+        }
         // 先看看数据库中是否已经存在
         $checkFeedExist = 'SELECT COUNT(*) FROM feed WHERE site_url = :site_url';
         $stmt = $app->db->prepare($checkFeedExist);
         $stmt->execute(array(':site_url' => $thisFeed['link']));
         if (intval($stmt->fetchColumn()) > 0) {
-            $exceptionCode = Helpers\CodeStatus::FEED_EXISTED;
-            throw new \Exception($exceptionCode, Helpers\CodeStatus::$statusCode[$exceptionCode]);
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::FEED_EXISTED);
+            return true;
         }
-
         // 存入数据库
         $app->db->beginTransaction();
         try {
@@ -67,19 +66,14 @@ class FeedHandlers
                 ':feed_updated' => $thisFeed['updated_date'],
             ));
             $newFeedID = $app->db->lastInsertId();
-
             self::insertPosts($thisFeed['post'], $newFeedID, $app);
-
             $app->db->commit();
         } catch (\Exception $e) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::SYSTEM_ERROR);
             $app->db->rollBack();
-
-            $exceptionCode = Helpers\CodeStatus::SYSTEM_ERROR;
-            $exceptionMsg = sprintf('%s: %s', Helpers\CodeStatus::$statusCode[$exceptionCode], $e->getMessage());
-            throw new \Exception($exceptionCode, $exceptionMsg);
         }
-
-        return $thisFeed;
+        Helpers\ResponseUtils::responseJSON($thisFeed);
+        return true;
     }
 
     public static function unsubscribe($app)
