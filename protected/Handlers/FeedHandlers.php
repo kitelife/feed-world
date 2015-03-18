@@ -82,13 +82,18 @@ class FeedHandlers
         return true;
     }
 
-    public static function unsubscribe($app, $id)
+    public static function unsubscribe($app)
     {
+        $feedID = $app->request->get('feed_id', null);
+        if ($feedID === null) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
+            return true;
+        }
         // 先检查一下$id所对应的feed是否属于当前用户
         $checkBelongTo = 'SELECT COUNT(*) FROM feed WHERE feed_id = :feed_id AND user_id := :user_id';
         $stmt = $app->db->prepare($checkBelongTo);
         $stmt->execute(array(
-            ':feed_id' => $id,
+            ':feed_id' => $feedID,
             ':user_id' => $_SESSION['user_id'],
         ));
         if ($stmt->fetchColumn() === 0) {
@@ -99,11 +104,11 @@ class FeedHandlers
         try {
             $deletePosts = 'DELETE FROM post WHERE feed_id = :feed_id';
             $stmt = $app->db->prepare($deletePosts);
-            $stmt->execute(array(':feed_id' => $id));
+            $stmt->execute(array(':feed_id' => $feedID));
 
             $deleteFeed = 'DELETE FROM feed WHERE feed_id = :feed_id';
             $stmt = $app->prepare($deleteFeed);
-            $stmt->execute(array(':feed_id' => $id));
+            $stmt->execute(array(':feed_id' => $feedID));
 
             $app->db->commit();
         } catch (\Exception $e) {

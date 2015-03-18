@@ -63,7 +63,10 @@ $(function () {
             unsubscribeIt: function (targetFeed) {
                 var unsubscribeReq = $.ajax({
                     type: 'post',
-                    url: '/feed/'+ targetFeed.feed.feed_id +'/unsubscribe',
+                    url: '/feed/unsubscribe',
+                    data: {
+                        feed_id: targetFeed.feed.feed_id
+                    },
                     dataType: 'json'
                 });
                 unsubscribeReq.done(function(resp) {

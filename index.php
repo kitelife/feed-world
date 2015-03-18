@@ -98,8 +98,8 @@ $app->post('/feed/subscribe', function () use ($app) {
 });
 
 // 取消订阅
-$app->post('/feed/:id/unsubscribe', function ($id) use ($app) {
-    Handlers\FeedHandlers::unsubscribe($app, $id);
+$app->post('/feed/unsubscribe', function () use ($app) {
+    Handlers\FeedHandlers::unsubscribe($app);
     return true;
 });
 

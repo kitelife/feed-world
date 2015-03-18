@@ -65,8 +65,8 @@
                 <div class="panel-body">
                     <ul class="list-group">
                         <li class="list-group-item one-feed" v-repeat="feed: feeds" v-on="click: listMyPost(this)"><a
-                                href="{{feed.site_url}}" target="_blank">{{feed.title}} <i
-                                class="fa fa-times fa-2x unsubscribe-it" v-on="click: unsubscribeIt(this)"></i></a>
+                                href="{{feed.site_url}}" target="_blank">{{feed.title}}</a><i
+                                class="fa fa-times fa-2x unsubscribe-it" v-on="click: unsubscribeIt(this)"></i>
                         </li>
                     </ul>
                 </div>
