@@ -44,9 +44,9 @@ class FeedHandlers
             return true;
         }
         // 先看看数据库中是否已经存在
-        $checkFeedExist = 'SELECT COUNT(*) FROM feed WHERE site_url = :site_url';
+        $checkFeedExist = 'SELECT COUNT(*) FROM feed WHERE site_url = :site_url AND user_id=:user_id';
         $stmt = $app->db->prepare($checkFeedExist);
-        $stmt->execute(array(':site_url' => $thisFeed['link']));
+        $stmt->execute(array(':site_url' => $thisFeed['link'], ':user_id' => $_SESSION['user_id']));
         if (intval($stmt->fetchColumn()) > 0) {
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::FEED_EXISTED);
             return true;
