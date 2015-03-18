@@ -27,7 +27,7 @@ class UserHandlers
     {
         $githubCode = $app->request->get('code', null);
         if ($githubCode !== null) {
-            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($githubCode);
+            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($githubCode, $app->settings['github']);
             if ($res === null) {
                 throw new \Exception('连接不上Github，登陆失败！', 500);
             }

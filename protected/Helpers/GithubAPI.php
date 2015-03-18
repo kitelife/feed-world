@@ -11,24 +11,22 @@ namespace FeedWorld\Helpers;
 
 class GithubAPI {
 
-    public static $githubConfig = null;
 
-    public static function genAuthorizeURL($app) {
-        self::$githubConfig = $app->settings['github'];
+    public static function genAuthorizeURL($githubConfig) {
         $queryString = http_build_query(array(
-            'client_id' => self::$githubConfig['client_id'],
-            'redirect_uri' => self::$githubConfig['redirect_uri'],
-            'scope' => self::$githubConfig['scope'],
+            'client_id' => $githubConfig['client_id'],
+            'redirect_uri' => $githubConfig['redirect_uri'],
+            'scope' => $githubConfig['scope'],
         ));
        return sprintf('https://github.com/login/oauth/authorize?%s', $queryString);
     }
 
-    public static function fetchAccessToken($githubCode) {
+    public static function fetchAccessToken($githubCode, $githubConfig) {
         $payLoad = array(
-            'client_id' => self::$githubConfig['client_id'],
-            'client_secret' => self::$githubConfig['client_secret'],
+            'client_id' => $githubConfig['client_id'],
+            'client_secret' => $githubConfig['client_secret'],
             'code' => $githubCode,
-            'redirect_uri' => self::$githubConfig['redirect_uri'],
+            'redirect_uri' => $githubConfig['redirect_uri'],
         );
         $header = array(
             'Accept' => 'application/json'
