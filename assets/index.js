@@ -136,7 +136,7 @@ $(function () {
                     setStar = targetPost.post.is_star === 0 ? 1 : 0;
                 var starPostReq = $.ajax({
                     type: 'post',
-                    url: '/feed/' + feedListVM.activeFeed + '/post/' + targetPostID,
+                    url: '/feed/' + feedListVM.activeFeed.feed_id + '/post/' + targetPostID,
                     data: {
                         set_star: setStar
                     },
@@ -157,7 +157,7 @@ $(function () {
                     setRead = targetPost.post.is_read === 0 ? 1 : 0;
                 var readPostReq = $.ajax({
                     type: 'post',
-                    url: '/feed/' + feedListVM.activeFeed + '/post/' + targetPostID,
+                    url: '/feed/' + feedListVM.activeFeed.feed_id + '/post/' + targetPostID,
                     data: {
                         set_read: setRead
                     },
