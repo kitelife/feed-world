@@ -18,6 +18,18 @@ $(function () {
         });
     }
 
+    function activeFeed(targetFeedID) {
+        feedListVM.feeds.forEach(function (element, index, arr) {
+            if (element.feed_id == targetFeedID) {
+                feedListVM.feeds[index].active = true;
+            } else {
+                if (element.active === true) {
+                    element.active = false;
+                }
+            }
+        });
+    }
+
     /*
      * 取用户信息
      * */
@@ -60,6 +72,7 @@ $(function () {
             listMyPost: function (targetFeed, e) {
                 e.stopPropagation();
                 getPostsByFeed(targetFeed.feed.feed_id);
+                activeFeed(targetFeed.feed.feed_id);
             },
             unsubscribeIt: function (targetFeed, e) {
                 e.stopPropagation();
@@ -71,7 +84,7 @@ $(function () {
                     },
                     dataType: 'json'
                 });
-                unsubscribeReq.done(function(resp) {
+                unsubscribeReq.done(function (resp) {
                     if (resp.code === 1000) {
                         alertify.log('成功！', 'success', 1000);
                         setTimeout("window.location.href='/'", 1500);
@@ -93,15 +106,12 @@ $(function () {
             feedListVM.feeds = resp.data;
             if (feedListVM.feeds.length) {
                 getPostsByFeed(feedListVM.feeds[0].feed_id);
+                activeFeed(feedListVM.feeds[0].feed_id);
             }
         } else {
             alertify.log(resp.message, 'error', 5000);
         }
     });
-
-    /*
-     * 取首个订阅的文章列表
-     * */
 
     var postListVM = new Vue({
         el: '#post_list',
