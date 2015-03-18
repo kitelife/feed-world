@@ -23,7 +23,7 @@ $(function () {
             if (element.feed_id == targetFeedID) {
                 feedListVM.feeds[index].active = 'active';
             } else {
-                if (element.active === true) {
+                if (element.active === 'active') {
                     feedListVM.feeds[index].active = '';
                 }
             }
