@@ -19,18 +19,15 @@ $(function () {
     }
 
     function activeFeed(targetFeedID) {
-        var newFeedData = [];
         feedListVM.feeds.forEach(function (element, index, arr) {
             if (element.feed_id == targetFeedID) {
-                element.active = 'active';
+                feedListVM.feeds[index].active = 'active-feed';
             } else {
-                if (element.active === 'active') {
-                    element.active = '';
+                if (element.active === 'active-feed') {
+                    feedListVM.feeds[index].active = '';
                 }
             }
-            newFeedData.push(element);
         });
-        feedListVM.feeds = newFeedData;
     }
 
     /*
