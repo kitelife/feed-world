@@ -126,6 +126,13 @@ class FeedHandlers
         $stmt->execute(array(':user_id' => $_SESSION['user_id']));
         $feeds = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        $countUnread = 'SELECT COUNT(*) FROM post WHERE feed_id = :feed_id AND is_read = 0';
+        $stmt = $app->db->prepare($countUnread);
+        foreach ($feeds as $index => $feed) {
+            $stmt->execute(array(':feed_id' => $feed['feed_id']));
+            $feeds[$index]['unread_count'] = $stmt->fetchColumn();
+        }
+
         Helpers\ResponseUtils::responseJSON($feeds);
         return true;
     }

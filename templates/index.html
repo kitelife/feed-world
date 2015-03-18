@@ -81,7 +81,7 @@
                     <ul class="list-group">
                         <li v-repeat="feed: feeds" v-on="click: listMyPost(this, $event)"
                             class="list-group-item one-feed {{feed.active ? 'list-group-item-success' : ''}}"><a
-                                href="{{feed.site_url}}" target="_blank">{{feed.title}}</a><i
+                                href="{{feed.site_url}}" target="_blank">{{feed.title}}</a><span class="badge">{{feed.unread_count}}</span><i
                                 class="fa fa-times unsubscribe-it" v-on="click: unsubscribeIt(this, $event)"></i>
                         </li>
                     </ul>

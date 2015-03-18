@@ -22,13 +22,13 @@ $(function () {
         feedListVM.feeds.forEach(function (element, index, arr) {
             if (element.feed_id == targetFeedID) {
                 feedListVM.feeds[index].active = true;
+                feedListVM.activeFeed = element;
             } else {
                 if (element.active === true) {
                     feedListVM.feeds[index].active = false;
                 }
             }
         });
-        feedListVM.activeFeed = targetFeedID;
     }
 
     /*
@@ -68,7 +68,7 @@ $(function () {
         el: '#feed_list',
         data: {
             feeds: [],
-            activeFeed: 0
+            activeFeed: null
         },
         methods: {
             listMyPost: function (targetFeed, e) {
@@ -161,6 +161,7 @@ $(function () {
                 readPostReq.done(function (resp) {
                     if (resp.code === 1000) {
                         targetPost.post.is_read = setRead;
+                        feedListVM.activeFeed.unread_count--;
                     } else {
                         alertify.log(resp.message, 'error', 5000);
                     }
