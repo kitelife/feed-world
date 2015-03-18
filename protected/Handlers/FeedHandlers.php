@@ -90,7 +90,7 @@ class FeedHandlers
             return true;
         }
         // 先检查一下$id所对应的feed是否属于当前用户
-        $checkBelongTo = 'SELECT COUNT(*) FROM feed WHERE feed_id = :feed_id AND user_id := :user_id';
+        $checkBelongTo = 'SELECT COUNT(*) FROM feed WHERE feed_id = :feed_id AND user_id = :user_id';
         $stmt = $app->db->prepare($checkBelongTo);
         $stmt->execute(array(
             ':feed_id' => $feedID,
@@ -107,7 +107,7 @@ class FeedHandlers
             $stmt->execute(array(':feed_id' => $feedID));
 
             $deleteFeed = 'DELETE FROM feed WHERE feed_id = :feed_id';
-            $stmt = $app->prepare($deleteFeed);
+            $stmt = $app->db->prepare($deleteFeed);
             $stmt->execute(array(':feed_id' => $feedID));
 
             $app->db->commit();
