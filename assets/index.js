@@ -28,6 +28,7 @@ $(function () {
                 }
             }
         });
+        feedListVM.activeFeed = targetFeedID;
     }
 
     /*
@@ -66,7 +67,8 @@ $(function () {
     var feedListVM = new Vue({
         el: '#feed_list',
         data: {
-            feeds: []
+            feeds: [],
+            activeFeed: 0
         },
         methods: {
             listMyPost: function (targetFeed, e) {
@@ -103,7 +105,7 @@ $(function () {
     });
     feedListReq.done(function (resp) {
         if (resp.code === 1000) {
-            resp.data.forEach(function(ele, index, arr) {
+            resp.data.forEach(function (ele, index, arr) {
                 resp.data[index].active = false;
             });
             feedListVM.feeds = resp.data;
@@ -120,6 +122,50 @@ $(function () {
         el: '#post_list',
         data: {
             posts: []
+        },
+        methods: {
+            starOrNot: function (targetPost, e) {
+                e.stopPropagation();
+
+                var targetPostID = targetPost.post.post_id,
+                    setStar = targetPost.post.is_star === '0' ? '1' : '0';
+                var starPostReq = $.ajax({
+                    type: 'post',
+                    url: '/feed/' + feedListVM.activeFeed + '/post/' + targetPostID,
+                    data: {
+                        set_star: setStar
+                    },
+                    dataType: 'json'
+                });
+                starPostReq.done(function (resp) {
+                    if (resp.code === 1000) {
+                        targetPost.post.is_star = setStar;
+                    } else {
+                        alertify.log(resp.message, 'error', 5000);
+                    }
+                });
+            },
+            readOrNot: function (targetPost, e) {
+                e.stopPropagation();
+
+                var targetPostID = targetPost.post.post_id,
+                    setRead = targetPost.post.is_read === '0' ? '1' : '0';
+                var readPostReq = $.ajax({
+                    type: 'post',
+                    url: '/feed/' + feedListVM.activeFeed + '/post/' + targetPostID,
+                    data: {
+                        set_read: setRead
+                    },
+                    dataType: 'json'
+                });
+                readPostReq.done(function (resp) {
+                    if (resp.code === 1000) {
+                        targetPost.post.is_read = setRead;
+                    } else {
+                        alertify.log(resp.message, 'error', 5000);
+                    }
+                });
+            }
         }
     });
 
