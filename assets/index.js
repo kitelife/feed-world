@@ -21,9 +21,9 @@ $(function () {
     function activeFeed(targetFeedID) {
         feedListVM.feeds.forEach(function (element, index, arr) {
             if (element.feed_id == targetFeedID) {
-                feedListVM.feeds[index].active = 'active-feed';
+                feedListVM.feeds[index].active = 'list-group-item-success';
             } else {
-                if (element.active === 'active-feed') {
+                if (element.active === 'list-group-item-success') {
                     feedListVM.feeds[index].active = '';
                 }
             }
