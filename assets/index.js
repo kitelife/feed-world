@@ -11,6 +11,10 @@ $(function () {
         });
         postListReq.done(function (resp) {
             if (resp.code === 1000) {
+                resp.data.forEach(function (ele, index, arr) {
+                    resp.data[index].is_star = parseInt(ele.is_star);
+                    resp.data[index].is_read = parseInt(ele.is_read);
+                });
                 postListVM.posts = resp.data;
             } else {
                 alertify.log(resp.message, 'error', 5000);
@@ -107,6 +111,7 @@ $(function () {
         if (resp.code === 1000) {
             resp.data.forEach(function (ele, index, arr) {
                 resp.data[index].active = false;
+                resp.data[index].unread_count = parseInt(ele.unread_count);
             });
             feedListVM.feeds = resp.data;
             if (feedListVM.feeds.length) {
@@ -128,7 +133,7 @@ $(function () {
                 e.stopPropagation();
 
                 var targetPostID = targetPost.post.post_id,
-                    setStar = targetPost.post.is_star === '0' ? 1 : 0;
+                    setStar = targetPost.post.is_star === 0 ? 1 : 0;
                 var starPostReq = $.ajax({
                     type: 'post',
                     url: '/feed/' + feedListVM.activeFeed + '/post/' + targetPostID,
@@ -139,7 +144,7 @@ $(function () {
                 });
                 starPostReq.done(function (resp) {
                     if (resp.code === 1000) {
-                        targetPost.post.is_star = setStar.toString();
+                        targetPost.post.is_star = setStar;
                     } else {
                         alertify.log(resp.message, 'error', 5000);
                     }
@@ -149,7 +154,7 @@ $(function () {
                 e.stopPropagation();
 
                 var targetPostID = targetPost.post.post_id,
-                    setRead = targetPost.post.is_read === '0' ? 1 : 0;
+                    setRead = targetPost.post.is_read === 0 ? 1 : 0;
                 var readPostReq = $.ajax({
                     type: 'post',
                     url: '/feed/' + feedListVM.activeFeed + '/post/' + targetPostID,
@@ -160,7 +165,7 @@ $(function () {
                 });
                 readPostReq.done(function (resp) {
                     if (resp.code === 1000) {
-                        targetPost.post.is_read = setRead.toString();
+                        targetPost.post.is_read = setRead;
                         feedListVM.activeFeed.unread_count += (setRead === 1 ? -1 : 1);
                     } else {
                         alertify.log(resp.message, 'error', 5000);
