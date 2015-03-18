@@ -21,10 +21,10 @@ $(function () {
     function activeFeed(targetFeedID) {
         feedListVM.feeds.forEach(function (element, index, arr) {
             if (element.feed_id == targetFeedID) {
-                feedListVM.feeds[index].active = 'list-group-item-success';
+                feedListVM.feeds[index].active = true;
             } else {
-                if (element.active === 'list-group-item-success') {
-                    feedListVM.feeds[index].active = '';
+                if (element.active === true) {
+                    feedListVM.feeds[index].active = false;
                 }
             }
         });
@@ -104,7 +104,7 @@ $(function () {
     feedListReq.done(function (resp) {
         if (resp.code === 1000) {
             resp.data.forEach(function(ele, index, arr) {
-                resp.data[index].active = '';
+                resp.data[index].active = false;
             });
             feedListVM.feeds = resp.data;
             if (feedListVM.feeds.length) {

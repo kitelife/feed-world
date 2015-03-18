@@ -38,7 +38,7 @@
             float: right;
         }
 
-        .active-feed {
+        .list-group-item.active-feed {
             color: #eee;
         }
     </style>
@@ -67,7 +67,7 @@
                 <div class="panel-heading">订阅列表</div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li v-repeat="feed: feeds" v-on="click: listMyPost(this, $event)" class="list-group-item one-feed {{feed.active}}"><a
+                        <li v-repeat="feed: feeds" v-on="click: listMyPost(this, $event)" class="list-group-item one-feed {{feed.active ? 'list-group-item-success' : ''}}"><a
                                 href="{{feed.site_url}}" target="_blank">{{feed.title}}</a><i
                                 class="fa fa-times unsubscribe-it" v-on="click: unsubscribeIt(this, $event)"></i>
                         </li>
