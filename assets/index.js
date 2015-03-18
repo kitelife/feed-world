@@ -19,15 +19,18 @@ $(function () {
     }
 
     function activeFeed(targetFeedID) {
+        var newFeedData = [];
         feedListVM.feeds.forEach(function (element, index, arr) {
             if (element.feed_id == targetFeedID) {
-                feedListVM.feeds[index].active = 'active';
+                element.active = 'active';
             } else {
                 if (element.active === 'active') {
-                    feedListVM.feeds[index].active = '';
+                    element.active = '';
                 }
             }
+            newFeedData.push(element);
         });
+        feedListVM.feeds = newFeedData;
     }
 
     /*
@@ -103,6 +106,9 @@ $(function () {
     });
     feedListReq.done(function (resp) {
         if (resp.code === 1000) {
+            resp.data.forEach(function(ele, index, arr) {
+                resp.data[index].active = '';
+            });
             feedListVM.feeds = resp.data;
             if (feedListVM.feeds.length) {
                 getPostsByFeed(feedListVM.feeds[0].feed_id);
