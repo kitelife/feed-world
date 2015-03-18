@@ -32,8 +32,8 @@ class FeedHandlers
     {
         $targetURL = $app->request->post('url', '');
         if ($targetURL === '') {
-            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
-            return true;
+            $exceptionCode = Helpers\CodeStatus::PARAMETER_NOT_EXISTED;
+            throw new \Exception($exceptionCode, Helpers\CodeStatus::$statusCode[$exceptionCode]);
         }
 
         $targetURL = trim($targetURL);
@@ -42,17 +42,14 @@ class FeedHandlers
         }
 
         $thisFeed = Helpers\CommonUtils::fetchFeed($targetURL, $app->settings);
-        if ($thisFeed === false) {
-            return true;
-        }
 
         // 先看看数据库中是否已经存在
         $checkFeedExist = 'SELECT COUNT(*) FROM feed WHERE site_url = :site_url';
         $stmt = $app->db->prepare($checkFeedExist);
         $stmt->execute(array(':site_url' => $thisFeed['link']));
         if ($stmt->fetchColumn() > 0) {
-            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::FEED_EXISTED);
-            return true;
+            $exceptionCode = Helpers\CodeStatus::FEED_EXISTED;
+            throw new \Exception($exceptionCode, Helpers\CodeStatus::$statusCode[$exceptionCode]);
         }
 
         // 存入数据库
@@ -75,11 +72,14 @@ class FeedHandlers
 
             $app->db->commit();
         } catch (\Exception $e) {
-            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::SYSTEM_ERROR);
             $app->db->rollBack();
+
+            $exceptionCode = Helpers\CodeStatus::SYSTEM_ERROR;
+            $exceptionMsg = sprintf('%s: %s', Helpers\CodeStatus::$statusCode[$exceptionCode], $e->getMessage());
+            throw new \Exception($exceptionCode, $exceptionMsg);
         }
-        Helpers\ResponseUtils::responseJSON($thisFeed);
-        return true;
+
+        return $thisFeed;
     }
 
     public static function unsubscribe($app)

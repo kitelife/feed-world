@@ -11,11 +11,14 @@ namespace FeedWorld\Helpers;
 class ResponseUtils
 {
 
-    public static function responseError($errCode)
+    public static function responseError($errCode, $errMsg = null)
     {
+        if ($errMsg === null) {
+            $errMsg = CodeStatus::$statusCode[$errCode];
+        }
         echo json_encode(array(
             'code' => $errCode,
-            'message' => CodeStatus::$statusCode[$errCode],
+            'message' => $errMsg,
         ));
 
         return true;
