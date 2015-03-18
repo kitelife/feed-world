@@ -8,7 +8,7 @@
 
 return array(
     'database' => array(
-        'name' => 'rss_world',
+        'name' => 'feed_world',
         'host' => '127.0.0.1',
         'port' => '3306',
         'username' => 'root',

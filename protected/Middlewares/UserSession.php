@@ -13,15 +13,20 @@ class UserSession extends \Slim\Middleware
     public function call()
     {
         $app = $this->app;
-        $app->log->debug($app->request->getPath());
-        if (\FeedWorld\Helpers\CommonUtils::checkLogin($app) === false
-            && strcmp($app->request->getPath(), '/user/login') !== 0
-        ) {
+
+        $hasLogin = \FeedWorld\Helpers\CommonUtils::checkLogin($app);
+        $toLogin = strpos($app->request->getPathInfo(), '/user/login') !== 0 ? false : true;
+
+        if (!$hasLogin &&  !$toLogin) {
             if ($app->request->isAjax()) {
                 \FeedWorld\Helpers\ResponseUtils::responseError(\FeedWorld\Helpers\CodeStatus::REQUIRE_LOGIN);
                 return false;
             }
             $this->app->response->redirect('/user/login', 302);
+        }
+
+        if ($hasLogin && $toLogin) {
+            $this->app->response->redirect('/', 302);
         }
         $this->next->call();
         return true;

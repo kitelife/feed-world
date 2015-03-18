@@ -16,7 +16,7 @@ class UserHandlers
         $insertNewUser = 'INSERT INTO user (`from_where`, `id_from`, `name_from`) VALUES (:from_where, :id_from, :name_from)';
         $stmt = $app->db->prepare($insertNewUser);
         $stmt->execute(array(
-            ':from_wehre' => $userInfo['from_where'],
+            ':from_where' => $userInfo['from_where'],
             ':id_from' => $userInfo['id_from'],
             ':name_from' => $userInfo['name_from']
         ));
