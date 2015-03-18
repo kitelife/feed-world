@@ -91,6 +91,12 @@ $app->get('/user/profile', function () use ($app) {
     return true;
 });
 
+// 资源(订阅)列表
+$app->get('/feed', function () use ($app) {
+    Handlers\FeedHandlers::listFeed($app);
+    return true;
+});
+
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
     try {
@@ -108,27 +114,26 @@ $app->post('/feed/unsubscribe', function () use ($app) {
     return true;
 });
 
-// 资源(订阅)列表
-$app->get('/feed', function () use ($app) {
-    Handlers\FeedHandlers::listFeed($app);
-    return true;
-});
-
 $app->post('/feed/:feedID/update', function ($feedID) use ($app) {
     Handlers\FeedHandlers::updateFeed($app, $feedID);
     return true;
-});
+})->conditions(array('feedID' => '\d+'));
 
 // 资源的文章列表
 $app->get('/feed/:feedID', function ($feedID) use ($app) {
     Handlers\PostHandlers::listPost($app, $feedID);
     return true;
-});
+})->conditions(array('feedID' => '\d+'));
 
 
 $app->post('/feed/:feedID/post/:postID', function ($feedID, $postID) use ($app) {
     Handlers\PostHandlers::changePostStatus($app, $feedID, $postID);
     return true;
-});
+})->conditions(
+        array(
+            'feedID' => '\d+',
+            'postID' => '\d+'
+        )
+    );
 
 $app->run();
