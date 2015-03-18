@@ -6,7 +6,7 @@ $(function () {
     function getPostsByFeed(feedID) {
         var postListReq = $.ajax({
             type: 'get',
-            url: '/feed/' + feedListVM.feeds[0].feed_id,
+            url: '/feed/' + feedID,
             dataType: 'json'
         });
         postListReq.done(function (resp) {
@@ -29,7 +29,6 @@ $(function () {
         },
         methods: {
             onClick: function (e) {
-                console.log('Test');
                 $('#new_feed_modal').modal('show');
             }
         }
