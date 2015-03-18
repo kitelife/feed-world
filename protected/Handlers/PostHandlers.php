@@ -22,7 +22,7 @@ class PostHandlers
                 ':user_id' => $_SESSION['user_id']
             )
         );
-        $posts = $stmt->queryAll(\PDO::FETCH_ASSOC);
+        $posts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         Helpers\ResponseUtils::responseJSON($posts);
         return true;
     }
