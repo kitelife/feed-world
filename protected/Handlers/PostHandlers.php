@@ -38,7 +38,7 @@ class PostHandlers
         }
 
         if ($setRead !== null) {
-            $setRead = !!$setRead;
+            $setRead = intval($setRead);
             $setReadStatus = 'UPDATE post SET is_read = :is_read WHERE feed_id = :feed_id AND post_id = :post_id '
                 . 'AND (SELECT COUNT(*) FROM feed WHERE feed_id = :feed_id AND user_id = :user_id)';
             $stmt = $app->db->prepare($setReadStatus);
@@ -51,7 +51,7 @@ class PostHandlers
         }
 
         if ($setStar !== null) {
-            $setStar = !!$setStar;
+            $setStar = intval($setStar);
             $setStarStatus = 'UPDATE post SET is_star = :is_star WHERE feed_id = :feed_id AND post_id = :post_id '
                 . 'AND (SELECT COUNT(*) FROM feed WHERE feed_id = :feed_id AND user_id = :user_id)';
             $stmt = $app->db->prepare($setStarStatus);
