@@ -65,7 +65,7 @@ $app->get('/user/login', function () use ($app) {
 
     if ($loginType !== null) {
         if ($loginType === 'github') {
-            $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app), 302);
+            $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app->settings['github']), 302);
         }
         if ($loginType === 'weibo') {
 
