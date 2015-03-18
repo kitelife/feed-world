@@ -1,11 +1,14 @@
 USE feed_world;
 
 CREATE TABLE IF NOT EXISTS `user` (
-  `user_id` BIGINT(20) NOT NULL AUTO_INCREMENT
+  `user_id`    BIGINT(20)   NOT NULL AUTO_INCREMENT
   COMMENT '用户ID，主键',
-  `from_where` VARCHAR(20) NOT NULL DEFAULT '' COMMENT '用户来源',
-  `id_from` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '在来源侧的id',
-  'name_from' VARCHAR(100) NOT NULL DEFAULT '' COMMENT '在来源侧的name',
+  `from_where` VARCHAR(20)  NOT NULL DEFAULT ''
+  COMMENT '用户来源',
+  `id_from`    VARCHAR(100) NOT NULL DEFAULT ''
+  COMMENT '在来源侧的id',
+  `name_from`  VARCHAR(100) NOT NULL DEFAULT ''
+  COMMENT '在来源侧的name',
   PRIMARY KEY (`user_id`)
 )
   ENGINE = InnoDB
@@ -31,7 +34,6 @@ CREATE TABLE IF NOT EXISTS `feed` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-;
 
 CREATE TABLE IF NOT EXISTS `post` (
   `post_id`      BIGINT(20)    NOT NULL AUTO_INCREMENT
@@ -53,4 +55,3 @@ CREATE TABLE IF NOT EXISTS `post` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
-;

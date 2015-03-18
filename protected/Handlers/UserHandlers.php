@@ -33,7 +33,7 @@ class UserHandlers
             }
             $userProfile = \FeedWorld\Helpers\GithubAPI::fetchUserProfile($res['access_token']);
 
-            $checkUserExist = 'SELECT user_id FROM user WHERE from_where="github" AND id_from := id_from';
+            $checkUserExist = 'SELECT user_id FROM user WHERE from_where="github" AND id_from = :id_from';
             $stmt = $app->db->prepare($checkUserExist);
             $stmt->execute(array(':id_from' => $userProfile['id']));
             $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
