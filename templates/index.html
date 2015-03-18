@@ -29,6 +29,10 @@
         .post-pd {
             margin-left: 30px;
         }
+
+        .one-feed {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -55,7 +59,7 @@
                 <div class="panel-heading">订阅列表</div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li class="list-group-item" v-repeat="feed: feeds"><a href="{{feed.site_url}}" target="_blank" v-on="click: listMyPost(this)">{{feed.title}}</a>
+                        <li class="list-group-item one-feed" v-repeat="feed: feeds"><a href="{{feed.site_url}}" target="_blank" v-on="click: listMyPost(this)">{{feed.title}}</a>
                         </li>
                     </ul>
                 </div>
