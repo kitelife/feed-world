@@ -113,9 +113,9 @@ class FeedHandlers
             $app->db->commit();
         } catch (\Exception $e) {
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::SYSTEM_ERROR);
-
             $app->db->rollBack();
         }
+        Helpers\ResponseUtils::responseJSON('成功取消订阅！');
         return true;
     }
 
