@@ -78,13 +78,4 @@ class CommonUtils
         }
         return $thisFeed;
     }
-
-    public static function exceptionWrapper($targetCallBack, $args) {
-        try {
-            $result = call_user_func_array($targetCallBack, $args);
-            ResponseUtils::responseJSON($result);
-        } catch (\Exception $e) {
-            ResponseUtils::responseError($e->getCode(), $e->getMessage());
-        }
-    }
 }

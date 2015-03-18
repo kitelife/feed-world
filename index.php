@@ -93,7 +93,12 @@ $app->get('/user/profile', function () use ($app) {
 
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
-    Helpers\CommonUtils::exceptionWrapper('\FeedWorld\Handlers\FeedHandlers::subscribeFeed', array($app,));
+    try {
+        $result = FeedWorld\Handlers\FeedHandlers::subscribeFeed($app);
+        FeedWorld\Helpers\ResponseUtils::responseJSON($result);
+    } catch (\Exception $e) {
+        FeedWorld\Helpers\ResponseUtils::responseError($e->getCode(), $e->getMessage());
+    }
     return true;
 });
 
