@@ -171,7 +171,14 @@ class FeedHandlers
             }
             self::insertPosts($newPosts, $feedID, $app);
         }
-        Helpers\ResponseUtils::responseJSON(Helpers\CodeStatus::OK);
+
+        $dataToReturn = array();
+        $countUnread = 'SELECT COUNT(*) FROM post WHERE feed_id = :feed_id AND is_read = 0';
+        $stmt = $app->db->prepare($countUnread);
+        $stmt->execute(array(':feed_id' => $feedID));
+        $dataToReturn['unread_count'] = intval($stmt->fetchColumn());
+
+        Helpers\ResponseUtils::responseJSON($dataToReturn);
         return true;
     }
 }

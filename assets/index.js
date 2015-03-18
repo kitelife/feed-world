@@ -15,7 +15,9 @@ $(function () {
                     resp.data[index].is_star = parseInt(ele.is_star);
                     resp.data[index].is_read = parseInt(ele.is_read);
                 });
-                postListVM.posts = resp.data;
+                if (feedID === feedListVM.activeFeed.feed_id) {
+                    postListVM.posts = resp.data;
+                }
             } else {
                 alertify.log(resp.message, 'error', 5000);
             }
@@ -98,6 +100,27 @@ $(function () {
                         alertify.log(resp.message, 'error', 5000);
                     }
                 });
+            },
+            updateFeed: function(targetFeed, e) {
+                e.stopPropagation();
+
+                var targetFeedID = targetFeed.feed.feed_id;
+                var updateFeedReq = $.ajax({
+                    type: 'post',
+                    url: '/feed/' + targetFeedID + '/update',
+                    data: {},
+                    dataType: 'json'
+                });
+                updateFeedReq.done(function(resp) {
+                    if (resp.code === 1000) {
+                        targetFeed.feed.unread_count = resp.data.unread_count;
+                        if (feedListVM.activeFeed.feed_id === targetFeedID) {
+                            getPostsByFeed(targetFeedID);
+                        }
+                    } else {
+                        alertify.log(resp.message, 'error', 5000);
+                    }
+                });
             }
         }
     });
@@ -112,6 +135,7 @@ $(function () {
             resp.data.forEach(function (ele, index, arr) {
                 resp.data[index].active = false;
                 resp.data[index].unread_count = parseInt(ele.unread_count);
+                resp.data[index].updating = false;
             });
             feedListVM.feeds = resp.data;
             if (feedListVM.feeds.length) {

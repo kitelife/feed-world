@@ -34,7 +34,7 @@
             cursor: pointer;
         }
 
-        .unsubscribe-it {
+        .feed-operation {
             float: right;
         }
 
@@ -56,6 +56,10 @@
 
         .list-group-item > .badge {
             float: none !important;
+        }
+
+        .feed-unsubscribe {
+            margin-left: 8px;
         }
     </style>
 </head>
@@ -88,8 +92,10 @@
                             class="list-group-item one-feed {{feed.active ? 'list-group-item-success' : ''}}">
                             <a href="{{feed.site_url}}" target="_blank">{{feed.title}}</a>
                             <span class="badge">{{feed.unread_count}}</span>
-                            <span class="unsubscribe-it">
-                                <i class="fa fa-times" v-on="click: unsubscribeIt(this, $event)"></i>
+                            <span class="feed-operation">
+                                <i class="fa fa-refresh {{feed.updating ? 'fa-spin' : '' }} feed-update"
+                                   v-on="click: updateFeed(this, $event)"></i>
+                                <i class="fa fa-times feed-unsubscribe" v-on="click: unsubscribeIt(this, $event)"></i>
                             </span>
                         </li>
                     </ul>
