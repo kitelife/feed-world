@@ -58,7 +58,7 @@ $(function () {
         },
         methods: {
             listMyPost: function (targetFeed) {
-                getPostsByFeed(targetFeed.feed_id);
+                getPostsByFeed(targetFeed.feed.feed_id);
             }
         }
     });
