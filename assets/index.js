@@ -56,6 +56,11 @@ $(function () {
         el: '#feed_list',
         data: {
             feeds: []
+        },
+        methods: {
+            listMyPost: function (targetFeed) {
+                getPostsByFeed(targetFeed.feed_id);
+            }
         }
     });
 
