@@ -53,13 +53,13 @@ class CommonUtils
         } else {
             $thisFeed['title'] = (string)$feedData->title;
             $thisFeed['link'] = (string)$feedData->id;
-            $thisFeed['updated_date'] = (string)$feedData->updated;
+            $thisFeed['updated_date'] = date("Y-m-d H:i:s", strtotime((string)$feedData->updated));
 
             foreach ($feedData->entry as $entry) {
                 array_push($thisFeed['post'], array(
                     'title' => (string)$entry->title,
                     'link' => (string)$entry->id,
-                    'publish_date' => date('"Y-m-d H:i:s"', strtotime((string)$entry->published)),
+                    'publish_date' => date('Y-m-d H:i:s', strtotime((string)$entry->published)),
                 ));
             }
         }
