@@ -150,7 +150,7 @@ class FeedHandlers
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
             return true;
         }
-        $newFeedData = \FeedWorld\Helpers\CommonUtils::fetchFeed($oneRow['feed_url']);
+        $newFeedData = Helpers\CommonUtils::fetchFeed($oneRow['feed_url']);
         if ($newFeedData === false) {
             return true;
         }
