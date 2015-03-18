@@ -51,7 +51,7 @@
         }
 
         .icon-post-read {
-            margin-right: 8px;
+            margin-right: 10px;
         }
 
         .list-group-item > .badge {
@@ -101,7 +101,7 @@
                 <div class="panel-heading">文章列表</div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li v-repeat="post: posts"
+                        <li v-repeat="post: posts" v-on="click: readOrNot(this, $event)"
                             class="list-group-item {{post.is_read === 0 ? 'unread-post' : ''}}">
                             <i v-on="click: readOrNot(this, $event)"
                                class="fa {{post.is_read === 0 ? 'fa-circle' : 'fa-circle-o'}} icon-post-read"></i>
