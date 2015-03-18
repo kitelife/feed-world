@@ -26,6 +26,12 @@ $(function () {
         el: '#for_user_profile',
         data: {
             user_name: ''
+        },
+        methods: {
+            onClick: function (e) {
+                console.log('Test');
+                $('#new_feed_modal').modal('show');
+            }
         }
     });
 
@@ -77,17 +83,6 @@ $(function () {
         el: '#post_list',
         data: {
             posts: []
-        }
-    });
-
-
-    var newFeedButton = new Vue({
-        el: '#new_feed_button',
-        methods: {
-            onClick: function (e) {
-                console.log('Test');
-                $('#new_feed_modal').modal('show');
-            }
         }
     });
 
