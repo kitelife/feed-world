@@ -21,10 +21,10 @@ $(function () {
     function activeFeed(targetFeedID) {
         feedListVM.feeds.forEach(function (element, index, arr) {
             if (element.feed_id == targetFeedID) {
-                feedListVM.feeds[index].active = true;
+                feedListVM.feeds[index].active = 'active';
             } else {
                 if (element.active === true) {
-                    element.active = false;
+                    feedListVM.feeds[index].active = '';
                 }
             }
         });
