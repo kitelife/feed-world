@@ -62,7 +62,7 @@ class PostHandlers
                 ':user_id' => $_SESSION['user_id'],
             ));
         }
-
+        Helpers\ResponseUtils::responseJSON('修改成功！');
         return true;
     }
 }
