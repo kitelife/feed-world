@@ -30,7 +30,7 @@
             margin-left: 30px;
         }
 
-        .one-feed {
+        .one-feed, .icon-post-read, .icon-post-star {
             cursor: pointer;
         }
 
@@ -93,7 +93,7 @@
                 <div class="panel-heading">文章列表</div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li v-repeat="post: posts" class="list-group-item {{post.is_read ? '' : 'unread-post'}}"><a
+                        <li v-repeat="post: posts" class="list-group-item {{post.is_read === '0' ? 'unread-post' : ''}}"><a
                                 href="{{post.link}}" target="_blank">{{post.title}}</a><span
                                 class="post-pd">{{post.publish_date}}</span> <span class="post-operation"><i
                                 class="fa {{post.is_star ? 'fa-star' : 'fa-star-o'}} icon-post-star"></i> <i
