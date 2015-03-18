@@ -28,11 +28,11 @@ class UserHandlers
     {
         $githubCode = $app->request->get('code', null);
         if ($githubCode !== null) {
-            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($githubCode, $app->settings['github']);
+            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($githubCode, $app->settings);
             if ($res === null) {
                 throw new \Exception('连接不上Github，登陆失败！', 500);
             }
-            $userProfile = \FeedWorld\Helpers\GithubAPI::fetchUserProfile($res['access_token']);
+            $userProfile = \FeedWorld\Helpers\GithubAPI::fetchUserProfile($res['access_token'], $app->settings);
 
             $checkUserExist = 'SELECT user_id FROM user WHERE from_where="github" AND id_from = :id_from';
             $stmt = $app->db->prepare($checkUserExist);

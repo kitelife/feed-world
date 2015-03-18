@@ -26,4 +26,7 @@ return array(
     'weibo' => array(
 
     ),
+    'requests' => array(
+        'timeout' => 20,
+    ),
 );

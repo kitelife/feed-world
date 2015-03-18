@@ -41,7 +41,7 @@ class FeedHandlers
             $targetURL = 'http://' . $targetURL;
         }
 
-        $thisFeed = Helpers\CommonUtils::fetchFeed($targetURL);
+        $thisFeed = Helpers\CommonUtils::fetchFeed($targetURL, $app->settings);
         if ($thisFeed === false) {
             return true;
         }

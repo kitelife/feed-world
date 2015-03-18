@@ -16,9 +16,9 @@ class CommonUtils
         return isset($_SESSION['user_id']);
     }
 
-    public static function fetchFeed($url)
+    public static function fetchFeed($url, $settings)
     {
-        $targetURLResponse = \Requests::get($url);
+        $targetURLResponse = \Requests::get($url, array(), $settings['requests']);
         if (!$targetURLResponse->success) {
             \FeedWorld\Helpers\ResponseUtils::responseError(\FeedWorld\Helpers\CodeStatus::RESOURCE_NOT_ACCESSIBLE);
             return false;
