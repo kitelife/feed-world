@@ -35,7 +35,7 @@ class GithubAPI {
         if (!$resp->success) {
             return null;
         }
-        return json_decode($resp->body);
+        return json_decode($resp->body, true);
     }
 
     public static function fetchUserProfile($accessToken) {
@@ -44,6 +44,6 @@ class GithubAPI {
         if (!$resp->success) {
             return null;
         }
-        return json_decode($resp->body);
+        return json_decode($resp->body, true);
     }
 } 
