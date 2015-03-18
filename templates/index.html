@@ -26,12 +26,17 @@
             margin-bottom: 15px;
             margin-right: 20px;
         }
+
         .post-pd {
             margin-left: 30px;
         }
 
         .one-feed {
             cursor: pointer;
+        }
+
+        .unsubscribe-it {
+            float: right;
         }
     </style>
 </head>
@@ -59,7 +64,9 @@
                 <div class="panel-heading">订阅列表</div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li class="list-group-item one-feed" v-repeat="feed: feeds"  v-on="click: listMyPost(this)"><a href="{{feed.site_url}}" target="_blank">{{feed.title}}</a>
+                        <li class="list-group-item one-feed" v-repeat="feed: feeds" v-on="click: listMyPost(this)"><a
+                                href="{{feed.site_url}}" target="_blank">{{feed.title}} <i
+                                class="fa fa-times fa-2x unsubscribe-it" v-on="click: unsubscribeIt(this)"></i></a>
                         </li>
                     </ul>
                 </div>

@@ -59,6 +59,21 @@ $(function () {
         methods: {
             listMyPost: function (targetFeed) {
                 getPostsByFeed(targetFeed.feed.feed_id);
+            },
+            unsubscribeIt: function (targetFeed) {
+                var unsubscribeReq = $.ajax({
+                    type: 'post',
+                    url: '/feed/'+ targetFeed.feed.feed_id +'/unsubscribe',
+                    dataType: 'json'
+                });
+                unsubscribeReq.done(function(resp) {
+                    if (resp.code === 1000) {
+                        alertify.log('成功！', 'success', 1000);
+                        setTimeout("window.location.href='/'", 1500);
+                    } else {
+                        alertify.log(resp.message, 'error', 5000);
+                    }
+                });
             }
         }
     });
