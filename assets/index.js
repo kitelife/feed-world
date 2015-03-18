@@ -57,10 +57,12 @@ $(function () {
             feeds: []
         },
         methods: {
-            listMyPost: function (targetFeed) {
+            listMyPost: function (targetFeed, e) {
+                e.stopPropagation();
                 getPostsByFeed(targetFeed.feed.feed_id);
             },
-            unsubscribeIt: function (targetFeed) {
+            unsubscribeIt: function (targetFeed, e) {
+                e.stopPropagation();
                 var unsubscribeReq = $.ajax({
                     type: 'post',
                     url: '/feed/unsubscribe',

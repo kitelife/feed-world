@@ -84,7 +84,7 @@ class FeedHandlers
 
     public static function unsubscribe($app)
     {
-        $feedID = $app->request->get('feed_id', null);
+        $feedID = $app->request->post('feed_id', null);
         if ($feedID === null) {
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
             return true;
