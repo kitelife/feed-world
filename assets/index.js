@@ -3,6 +3,21 @@
  */
 $(function () {
 
+    function getPostsByFeed(feedID) {
+        var postListReq = $.ajax({
+            type: 'get',
+            url: '/feed/' + feedListVM.feeds[0].feed_id,
+            dataType: 'json'
+        });
+        postListReq.done(function (resp) {
+            if (resp.code === 1000) {
+                postListVM.posts = resp.data;
+            } else {
+                alertify.log(resp.message, 'error', 5000);
+            }
+        });
+    }
+
     /*
      * 取用户信息
      * */
@@ -46,6 +61,9 @@ $(function () {
     feedListReq.done(function (resp) {
         if (resp.code === 1000) {
             feedListVM.feeds = resp.data;
+            if (feedListVM.feeds.length) {
+                getPostsByFeed(feedListVM.feeds[0].feed_id);
+            }
         } else {
             alertify.log(resp.message, 'error', 5000);
         }
@@ -61,21 +79,6 @@ $(function () {
             posts: []
         }
     });
-
-    if (feedListVM.feeds.length) {
-        var postListReq = $.ajax({
-            type: 'get',
-            url: '/feed/' + feedListVM.feeds[0].feed_id,
-            dataType: 'json'
-        });
-        postListReq.done(function (resp) {
-            if (resp.code === 1000) {
-                postListVM.posts = resp.data;
-            } else {
-                alertify.log(resp.message, 'error', 5000);
-            }
-        });
-    }
 
 
     var newFeedButton = new Vue({
