@@ -104,6 +104,7 @@ $(function () {
             updateFeed: function(targetFeed, e) {
                 e.stopPropagation();
 
+                targetFeed.feed.updating = true;
                 var targetFeedID = targetFeed.feed.feed_id;
                 var updateFeedReq = $.ajax({
                     type: 'post',
@@ -120,6 +121,7 @@ $(function () {
                     } else {
                         alertify.log(resp.message, 'error', 5000);
                     }
+                    targetFeed.feed.updating = false;
                 });
             }
         }
