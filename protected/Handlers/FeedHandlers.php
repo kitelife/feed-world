@@ -151,18 +151,30 @@ class FeedHandlers
 
         if ($newFeedData['updated_date'] > $oneRow['feed_updated']) {
             // 选出原数据中最新一篇post的发布时间
-            $selectLatestPostTime = 'SELECT publish_date FROM post WHERE feed_id=:feed_id ORDER BY publish_date DESC LIMIT 1';
+            $selectLatestPostTime = 'SELECT title, publish_date FROM post WHERE feed_id=:feed_id ORDER BY publish_date DESC LIMIT 1';
             $stmt = $app->db->prepare($selectLatestPostTime);
             $stmt->execute(array(':feed_id' => $feedID));
             $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            $latestPostTime = empty($oneRow) ? 0 : $oneRow['publish_date'];
+            $latestPostTime = empty($oneRow) ? null : $oneRow['publish_date'];
+            $hasOneRow = empty($oneRow) ? false : true;
+
             $newPosts = array();
             foreach ($newFeedData['post'] as $onePost) {
-                /*
-                 * TODO: 这个比较有点粗糙，应该再对比一下 文章标题等信息，否则很可能会漏掉feed中某些文章
-                 * */
-                if ($onePost['publish_date'] > $latestPostTime) {
+                // 这里假设feed中的post是按发布时间从迟到早先后排序的
+                // 如果发布时间和标题都一样，那么之后的就不用比较了（都是之前就已经存储在数据库中了）
+                if ($latestPostTime !== null && $onePost['publish_date'] == $latestPostTime
+                    && $hasOneRow && strcmp($oneRow['title'], $onePost['title']) === 0) {
+                    break;
+                }
+
+                if ($latestPostTime === null
+                    || $onePost['publish_date'] > $latestPostTime
+                    || ($onePost['publish_data'] == $latestPostTime
+                        && strlen($oneRow['title']) !== strlen($onePost['title'])
+                        && strcmp($oneRow['title'], $onePost['title'])
+                    )
+                ) {
                     $newPosts[] = $onePost;
                 }
             }
