@@ -197,6 +197,9 @@ $(function () {
                         alertify.log(resp.message, 'error', 5000);
                     }
                 });
+            },
+            toStopPropagation: function(e) {
+                e.stopPropagation();
             }
         }
     });

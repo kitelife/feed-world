@@ -111,7 +111,7 @@
                             class="list-group-item {{post.is_read === 0 ? 'unread-post' : ''}}">
                             <i v-on="click: readOrNot(this, $event)"
                                class="fa {{post.is_read === 0 ? 'fa-circle' : 'fa-circle-o'}} icon-post-read"></i>
-                            <a href="{{post.link}}" target="_blank">{{post.title}}</a>
+                            <a href="{{post.link}}" target="_blank" v-on="click: toStopPropagation">{{post.title}}</a>
                             <span class="post-pd">{{post.publish_date}}</span>
                             <i v-on="click: starOrNot(this, $event)"
                                class="fa {{post.is_star === 0 ? 'fa-star-o' : 'fa-star'}} icon-post-star"></i>
