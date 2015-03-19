@@ -34,4 +34,13 @@ return array(
     'requests' => array(
         'timeout' => 20,
     ),
+    'session' => array(
+        'expires' => '1 year',
+        'path' => '/',
+        'domain' => null,
+        'secure' => false,
+        'httponly' => false,
+        'name' => 'slim_session',
+        'secret' => '1qazXSW@',
+    ),
 );

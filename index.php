@@ -19,18 +19,9 @@ $app = new \Slim\Slim(require('./protected/settings.php'));
 // 这个中间件必须比SessionCookie先add
 $app->add(new \FeedWorld\Middlewares\UserSession());
 
-$app->add(new \Slim\Middleware\SessionCookie(array(
-        'expires' => '1 year',
-        'path' => '/',
-        'domain' => null,
-        'secure' => false,
-        'httponly' => false,
-        'name' => 'slim_session',
-        'secret' => '1qazXSW@',
-        'cipher' => MCRYPT_RIJNDAEL_256,
-        'cipher_mode' => MCRYPT_MODE_CBC
-    ))
-);
+$app->add(new \Slim\Middleware\SessionCookie(
+    array('cipher' => MCRYPT_RIJNDAEL_256,'cipher_mode' => MCRYPT_MODE_CBC), array_merge($app->settings['session'])
+));
 
 $app->container->singleton('log', function ($c) {
     $log = new \Monolog\Logger('feed-world');
