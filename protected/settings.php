@@ -22,9 +22,14 @@ return array(
         'client_secret' => 'e33e9e270f6fe9bae3611f2edbaafea0917c0e5a',
         'redirect_uri' => 'http://58.215.187.122:9009/user/login',
         'scope' => '',
+        'state' => 'github-login-feed-world'
     ),
     'weibo' => array(
-
+        'AppKey' => '1837829253',
+        'client_secret' => '28e8750f6b9fa159dc5fce770decac02',
+        'redirect_uri' => 'http://58.215.187.122:9009/user/login',
+        'scope' => '',
+        'state' => 'weibo-login-feed-world'
     ),
     'requests' => array(
         'timeout' => 20,

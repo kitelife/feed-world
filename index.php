@@ -57,20 +57,28 @@ $app->get('/', function () use ($app) {
 
 $app->get('/user/login', function () use ($app) {
     $loginType = $app->request->get('type', null);
-    $githubCode = $app->request->get('code', null);
-
     if ($loginType !== null) {
         if ($loginType === 'github') {
             $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app->settings['github']), 302);
         }
         if ($loginType === 'weibo') {
-
+            $app->response->redirect(\FeedWorld\Helpers\WeiboAPI::genAuthorizeURL($app->settings['weibo']), 302);
         }
     }
-    if ($githubCode !== null) {
-        if (Handlers\UserHandlers::userLogin($app)) {
-            $app->response->redirect('/', 302);
+
+    $codeAfterAuthorize = $app->request->get('code', null);
+    $originState = $app->request->get('state', null);
+    $loginSuccess = false;
+
+    if ($codeAfterAuthorize !== null && $originState !== null) {
+        if (FeedWorld\Handlers\UserHandlers::userLogin($app, $codeAfterAuthorize, $originState)) {
+            $loginSuccess = true;
         }
+    }
+
+    if ($loginSuccess) {
+        $app->response->redirect('/', 302);
+    } else {
         // add flash message
         //
         $app->response->redirect('/user/login', 302);

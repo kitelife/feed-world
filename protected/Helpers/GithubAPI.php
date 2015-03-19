@@ -16,6 +16,7 @@ class GithubAPI {
             'client_id' => $githubConfig['client_id'],
             'redirect_uri' => $githubConfig['redirect_uri'],
             'scope' => $githubConfig['scope'],
+            'state' => $githubConfig['state']
         ));
        return sprintf('https://github.com/login/oauth/authorize?%s', $queryString);
     }

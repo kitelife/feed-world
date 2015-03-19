@@ -24,15 +24,19 @@ class UserHandlers
         return $app->db->lastInsertId();
     }
 
-    public static function userLogin($app)
+    public static function userLogin($app, $codeAftherAuthorize, $originState)
     {
-        $githubCode = $app->request->get('code', null);
-        if ($githubCode !== null) {
-            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($githubCode, $app->settings);
+        $appSettings = $app->settings;
+        if ($originState === $appSettings['github']['state']) {
+            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($codeAftherAuthorize, $appSettings);
             if ($res === null) {
-                throw new \Exception('连接不上Github，登陆失败！', 500);
+                // throw new \Exception('连接不上Github，登陆失败！', 500);
+                return false;
             }
-            $userProfile = \FeedWorld\Helpers\GithubAPI::fetchUserProfile($res['access_token'], $app->settings);
+            $userProfile = \FeedWorld\Helpers\GithubAPI::fetchUserProfile($res['access_token'], $appSettings);
+            if ($userProfile === null) {
+                return false;
+            }
 
             $checkUserExist = 'SELECT user_id FROM user WHERE from_where="github" AND id_from = :id_from';
             $stmt = $app->db->prepare($checkUserExist);
@@ -48,7 +52,38 @@ class UserHandlers
                 $userID = $oneRow['user_id'];
             }
             $_SESSION['user_id'] = $userID;
+            return true;
+        }
 
+        if ($originState === $appSettings['weibo']['state']) {
+            $res = \FeedWorld\Helpers\WeiboAPI::fetchAccessToken($codeAftherAuthorize, $appSettings);
+            if ($res === null) {
+                return false;
+            }
+            $idFrom = $res['uid'];
+            $requestParams = array(
+                'source' => $appSettings['weibo']['AppKey'],
+                'access_token' => $res['access_token'],
+                'uid' => $idFrom,
+            );
+            $userProfile = \FeedWorld\Helpers\WeiboAPI::fetchUserProfile($requestParams, $appSettings);
+            if ($userProfile === null) {
+                return false;
+            }
+            $checkUserExist = 'SELECT user_id FROM user WHERE from_where="weibo" AND id_from = :id_from';
+            $stmt = $app->db->prepare($checkUserExist);
+            $stmt->execute(array(':id_from' => $idFrom));
+            $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if (empty($oneRow)) {
+                $userID = self::newUser($app, array(
+                   'from_where' => 'weibo',
+                    'id_from' => $idFrom,
+                    'name_from' => $userProfile['name']
+                ));
+            } else {
+                $userID = $oneRow['user_id'];
+            }
+            $_SESSION['user_id'] = $userID;
             return true;
         }
 
