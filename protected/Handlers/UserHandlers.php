@@ -24,11 +24,11 @@ class UserHandlers
         return $app->db->lastInsertId();
     }
 
-    public static function userLogin($app, $codeAftherAuthorize, $originState)
+    public static function userLogin($app, $codeAfterAuthorize, $originState)
     {
         $appSettings = $app->settings;
         if ($originState === $appSettings['github']['state']) {
-            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($codeAftherAuthorize, $appSettings);
+            $res = \FeedWorld\Helpers\GithubAPI::fetchAccessToken($codeAfterAuthorize, $appSettings);
             if ($res === null) {
                 // throw new \Exception('连接不上Github，登陆失败！', 500);
                 return false;
@@ -56,7 +56,7 @@ class UserHandlers
         }
 
         if ($originState === $appSettings['weibo']['state']) {
-            $res = \FeedWorld\Helpers\WeiboAPI::fetchAccessToken($codeAftherAuthorize, $appSettings);
+            $res = \FeedWorld\Helpers\WeiboAPI::fetchAccessToken($codeAfterAuthorize, $appSettings);
             if ($res === null) {
                 return false;
             }
@@ -76,7 +76,7 @@ class UserHandlers
             $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
             if (empty($oneRow)) {
                 $userID = self::newUser($app, array(
-                   'from_where' => 'weibo',
+                    'from_where' => 'weibo',
                     'id_from' => $idFrom,
                     'name_from' => $userProfile['name']
                 ));
@@ -86,7 +86,6 @@ class UserHandlers
             $_SESSION['user_id'] = $userID;
             return true;
         }
-
         return false;
     }
 
