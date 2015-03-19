@@ -68,22 +68,16 @@ $app->get('/user/login', function () use ($app) {
 
     $codeAfterAuthorize = $app->request->get('code', null);
     $originState = $app->request->get('state', null);
-    $loginSuccess = false;
 
     if ($codeAfterAuthorize !== null && $originState !== null) {
         if (FeedWorld\Handlers\UserHandlers::userLogin($app, $codeAfterAuthorize, $originState)) {
-            $loginSuccess = true;
+            $app->response->redirect('/', 302);
+        } else {
+            // add flash message
+            //
+            $app->response->redirect('/user/login', 302);
         }
     }
-
-    if ($loginSuccess) {
-        $app->response->redirect('/', 302);
-    } else {
-        // add flash message
-        //
-        $app->response->redirect('/user/login', 302);
-    }
-
     echo file_get_contents('./templates/login.html');
     return true;
 });
