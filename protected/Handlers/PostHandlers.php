@@ -29,8 +29,8 @@ class PostHandlers
 
     public static function changePostStatus($app, $feedID, $postID)
     {
-        $setRead = $app->request->post('set_read');
-        $setStar = $app->request->post('set_star');
+        $setRead = $app->request->post('set_read', null);
+        $setStar = $app->request->post('set_star', null);
 
         if ($setRead === null && $setStar === null) {
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::PARAMETER_NOT_EXISTED);
