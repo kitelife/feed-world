@@ -33,4 +33,16 @@ class ResponseUtils
 
         return true;
     }
+
+    public static function responseExceptionWrapper($app, $e)
+    {
+        $app->log->warning(sprintf('code: %s, message: %s', $e->getCode(), $e->getMessage()));
+        if ($app->request->isAjax()) {
+            self::responseError(CodeStatus::OTHER_EXCEPTION);
+        } else {
+            $app->response->setStatus(500);
+            $app->response->setBody(CodeStatus::$statusCode[CodeStatus::OTHER_EXCEPTION]);
+        }
+        return;
+    }
 }

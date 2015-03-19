@@ -19,6 +19,7 @@ class CodeStatus
     const FEED_EXISTED = 1005; // feed已存在
     const WRONG_PARAMETER = 1006; // 参数错误
     const REQUIRE_LOGIN = 1007; // 请先登录
+    const OTHER_EXCEPTION = 1008; // 发生异常
 
     public static $statusCode = array(
         self::OK => '成功',
@@ -29,5 +30,6 @@ class CodeStatus
         self::FEED_EXISTED => 'Feed已存在',
         self::WRONG_PARAMETER => '请求参数错误',
         self::REQUIRE_LOGIN => '请先登录',
+        self::OTHER_EXCEPTION => '发生异常',
     );
 }

@@ -95,6 +95,6 @@ class UserHandlers
         $stmt = $app->db->prepare($selectUserProfile);
         $stmt->execute(array(':user_id' => $_SESSION['user_id']));
         $myProfile = $stmt->fetch(\PDO::FETCH_ASSOC);
-        return $myProfile;
+        \FeedWorld\Helpers\ResponseUtils::responseJSON($myProfile);
     }
 }

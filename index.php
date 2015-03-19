@@ -56,29 +56,33 @@ $app->get('/', function () use ($app) {
 });
 
 $app->get('/user/login', function () use ($app) {
-    $loginType = $app->request->get('type', null);
-    if ($loginType !== null) {
-        if ($loginType === 'github') {
-            $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app->settings['github']), 302);
+    try {
+        $loginType = $app->request->get('type', null);
+        if ($loginType !== null) {
+            if ($loginType === 'github') {
+                $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app->settings['github']), 302);
+            }
+            if ($loginType === 'weibo') {
+                $app->response->redirect(\FeedWorld\Helpers\WeiboAPI::genAuthorizeURL($app->settings['weibo']), 302);
+            }
         }
-        if ($loginType === 'weibo') {
-            $app->response->redirect(\FeedWorld\Helpers\WeiboAPI::genAuthorizeURL($app->settings['weibo']), 302);
-        }
-    }
 
-    $codeAfterAuthorize = $app->request->get('code', null);
-    $originState = $app->request->get('state', null);
+        $codeAfterAuthorize = $app->request->get('code', null);
+        $originState = $app->request->get('state', null);
 
-    if ($codeAfterAuthorize !== null && $originState !== null) {
-        if (FeedWorld\Handlers\UserHandlers::userLogin($app, $codeAfterAuthorize, $originState)) {
-            $app->response->redirect('/', 302);
-        } else {
-            // add flash message
-            //
-            $app->response->redirect('/user/login', 302);
+        if ($codeAfterAuthorize !== null && $originState !== null) {
+            if (FeedWorld\Handlers\UserHandlers::userLogin($app, $codeAfterAuthorize, $originState)) {
+                $app->response->redirect('/', 302);
+            } else {
+                // add flash message
+                //
+                $app->response->redirect('/user/login', 302);
+            }
         }
+        echo file_get_contents('./templates/login.html');
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
     }
-    echo file_get_contents('./templates/login.html');
     return true;
 });
 
@@ -89,42 +93,74 @@ $app->map('/user/logout', function () use ($app) {
 })->via('GET', 'POST');
 
 $app->get('/user/profile', function () use ($app) {
-    FeedWorld\Helpers\ResponseUtils::responseJSON(Handlers\UserHandlers::getUserProfile($app));
+    try {
+        Handlers\UserHandlers::getUserProfile($app);
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+    }
     return true;
 });
 
 // 资源(订阅)列表
 $app->get('/feed', function () use ($app) {
-    Handlers\FeedHandlers::listFeed($app);
+    try {
+        Handlers\FeedHandlers::listFeed($app);
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+    }
     return true;
 });
 
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
-    Handlers\FeedHandlers::subscribeFeed($app);
+    try {
+        Handlers\FeedHandlers::subscribeFeed($app);
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+    }
+
     return true;
 });
 
 // 取消订阅
 $app->post('/feed/unsubscribe', function () use ($app) {
-    Handlers\FeedHandlers::unsubscribe($app);
+    try {
+        Handlers\FeedHandlers::unsubscribe($app);
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+    }
+
     return true;
 });
 
 $app->post('/feed/:feedID/update', function ($feedID) use ($app) {
-    Handlers\FeedHandlers::updateFeed($app, $feedID);
+    try {
+        Handlers\FeedHandlers::updateFeed($app, $feedID);
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+    }
     return true;
 })->conditions(array('feedID' => '\d+'));
 
 // 资源的文章列表
 $app->get('/feed/:feedID', function ($feedID) use ($app) {
-    Handlers\PostHandlers::listPost($app, $feedID);
+    try {
+        Handlers\PostHandlers::listPost($app, $feedID);
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+    }
+
     return true;
 })->conditions(array('feedID' => '\d+'));
 
 
 $app->post('/feed/:feedID/post/:postID', function ($feedID, $postID) use ($app) {
-    Handlers\PostHandlers::changePostStatus($app, $feedID, $postID);
+    try {
+        Handlers\PostHandlers::changePostStatus($app, $feedID, $postID);
+    } catch (\Exception $e) {
+        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+    }
+
     return true;
 })->conditions(array('feedID' => '\d+', 'postID' => '\d+'));
 
