@@ -159,6 +159,9 @@ class FeedHandlers
             $latestPostTime = empty($oneRow) ? 0 : $oneRow['publish_date'];
             $newPosts = array();
             foreach ($newFeedData['post'] as $onePost) {
+                /*
+                 * TODO: 这个比较有点粗糙，应该再对比一下 文章标题等信息，否则很可能会漏掉feed中某些文章
+                 * */
                 if ($onePost['publish_date'] > $latestPostTime) {
                     $newPosts[] = $onePost;
                 }
