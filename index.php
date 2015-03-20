@@ -36,6 +36,23 @@ $app->container->singleton('db', function ($c) {
     return new \PDO($dsn, $dbSettings['username'], $dbSettings['password'], $dbSettings['options']);
 });
 
+//
+$routeCallBackDecorator = function ($handlerCallback) use ($app) {
+
+    $runMe = function () use ($app, $handlerCallback) {
+        $myArgs = func_get_args();
+        array_unshift($myArgs, $app);
+        try {
+            call_user_func_array($handlerCallback, $myArgs);
+        } catch (\Exception $e) {
+            \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
+        }
+        return true;
+    };
+
+    return $runMe;
+};
+
 /*
  * 所有登录状态检查的逻辑应放在一个中间件中去实现
  * */
@@ -83,24 +100,12 @@ $app->map('/user/logout', function () use ($app) {
     return true;
 })->via('GET', 'POST');
 
-$app->get('/user/profile', function () use ($app) {
-    try {
-        Handlers\UserHandlers::getUserProfile($app);
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
-    return true;
-});
+
+$app->get('/user/profile', $routeCallBackDecorator('\FeedWorld\Handlers\UserHandlers::getUserProfile'));
 
 // 资源(订阅)列表
-$app->get('/feed', function () use ($app) {
-    try {
-        Handlers\FeedHandlers::listFeed($app);
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
-    return true;
-});
+
+$app->get('/feed', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandler::listFeed'));
 
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
