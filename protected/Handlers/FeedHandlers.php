@@ -170,7 +170,7 @@ class FeedHandlers
 
                 if ($latestPostTime === null
                     || $onePost['publish_date'] > $latestPostTime
-                    || ($onePost['publish_data'] == $latestPostTime
+                    || ($onePost['publish_date'] == $latestPostTime
                         && strlen($oneRow['title']) !== strlen($onePost['title'])
                         && strcmp($oneRow['title'], $onePost['title'])
                     )
