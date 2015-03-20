@@ -17,7 +17,7 @@ $app = new \Slim\Slim(require('./protected/settings.php'));
 $app->add(new \FeedWorld\Middlewares\UserSession());
 
 $app->add(new \Slim\Middleware\SessionCookie(
-    array('cipher' => MCRYPT_RIJNDAEL_256, 'cipher_mode' => MCRYPT_MODE_CBC), array_merge($app->settings['session'])
+    array_merge(array('cipher' => MCRYPT_RIJNDAEL_256, 'cipher_mode' => MCRYPT_MODE_CBC), $app->settings['session'])
 ));
 
 $app->container->singleton('log', function ($c) {
