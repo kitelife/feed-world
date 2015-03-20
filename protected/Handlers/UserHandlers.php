@@ -24,7 +24,7 @@ class UserHandlers
         return $app->db->lastInsertId();
     }
 
-    public static function userLogin($app, $codeAfterAuthorize, $originState)
+    protected static function userLogin($app, $codeAfterAuthorize, $originState)
     {
         $appSettings = $app->settings;
         if ($originState === $appSettings['github']['state']) {
@@ -87,6 +87,32 @@ class UserHandlers
             return true;
         }
         return false;
+    }
+
+    public static function login($app) {
+        $loginType = $app->request->get('type', null);
+        if ($loginType !== null) {
+            if ($loginType === 'github') {
+                $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app->settings['github']), 302);
+            }
+            if ($loginType === 'weibo') {
+                $app->response->redirect(\FeedWorld\Helpers\WeiboAPI::genAuthorizeURL($app->settings['weibo']), 302);
+            }
+        }
+
+        $codeAfterAuthorize = $app->request->get('code', null);
+        $originState = $app->request->get('state', null);
+
+        if ($codeAfterAuthorize !== null && $originState !== null) {
+            if (self::userLogin($app, $codeAfterAuthorize, $originState)) {
+                $app->response->redirect('/', 302);
+            } else {
+                // add flash message
+                //
+                $app->response->redirect('/user/login', 302);
+            }
+        }
+        echo file_get_contents('./templates/login.html');
     }
 
     public static function getUserProfile($app)

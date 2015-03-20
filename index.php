@@ -9,9 +9,6 @@
 require './vendor/autoload.php';
 require './protected/autoload.php';
 
-use \FeedWorld\Handlers;
-use \FeedWorld\Helpers;
-
 date_default_timezone_set('Asia/Shanghai');
 
 $app = new \Slim\Slim(require('./protected/settings.php'));
@@ -20,7 +17,7 @@ $app = new \Slim\Slim(require('./protected/settings.php'));
 $app->add(new \FeedWorld\Middlewares\UserSession());
 
 $app->add(new \Slim\Middleware\SessionCookie(
-    array('cipher' => MCRYPT_RIJNDAEL_256,'cipher_mode' => MCRYPT_MODE_CBC), array_merge($app->settings['session'])
+    array('cipher' => MCRYPT_RIJNDAEL_256, 'cipher_mode' => MCRYPT_MODE_CBC), array_merge($app->settings['session'])
 ));
 
 $app->container->singleton('log', function ($c) {
@@ -54,7 +51,7 @@ $routeCallBackDecorator = function ($handlerCallback) use ($app) {
 };
 
 /*
- * 所有登录状态检查的逻辑应放在一个中间件中去实现
+ * 所有登录状态检查的逻辑应放在中间件\FeedWorld\Middlewares\UserSession中去实现
  * */
 
 // 主页
@@ -63,101 +60,38 @@ $app->get('/', function () use ($app) {
     return true;
 });
 
-$app->get('/user/login', function () use ($app) {
-    try {
-        $loginType = $app->request->get('type', null);
-        if ($loginType !== null) {
-            if ($loginType === 'github') {
-                $app->response->redirect(\FeedWorld\Helpers\GithubAPI::genAuthorizeURL($app->settings['github']), 302);
-            }
-            if ($loginType === 'weibo') {
-                $app->response->redirect(\FeedWorld\Helpers\WeiboAPI::genAuthorizeURL($app->settings['weibo']), 302);
-            }
-        }
+// 登录
+$app->get('/user/login', $routeCallBackDecorator('\FeedWorld\Handlers\UserHandlers::login'));
 
-        $codeAfterAuthorize = $app->request->get('code', null);
-        $originState = $app->request->get('state', null);
-
-        if ($codeAfterAuthorize !== null && $originState !== null) {
-            if (FeedWorld\Handlers\UserHandlers::userLogin($app, $codeAfterAuthorize, $originState)) {
-                $app->response->redirect('/', 302);
-            } else {
-                // add flash message
-                //
-                $app->response->redirect('/user/login', 302);
-            }
-        }
-        echo file_get_contents('./templates/login.html');
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
-    return true;
-});
-
+// 退出登录
 $app->map('/user/logout', function () use ($app) {
     unset($_SESSION['user_id']);
     $app->response->redirect('/user/login', 302);
     return true;
 })->via('GET', 'POST');
 
-
+// 获取用户信息
 $app->get('/user/profile', $routeCallBackDecorator('\FeedWorld\Handlers\UserHandlers::getUserProfile'));
 
 // 资源(订阅)列表
-
 $app->get('/feed', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::listFeed'));
 
 // 新建订阅
-$app->post('/feed/subscribe', function () use ($app) {
-    try {
-        Handlers\FeedHandlers::subscribeFeed($app);
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
-
-    return true;
-});
+$app->post('/feed/subscribe', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::subscribeFeed'));
 
 // 取消订阅
-$app->post('/feed/unsubscribe', function () use ($app) {
-    try {
-        Handlers\FeedHandlers::unsubscribe($app);
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
+$app->post('/feed/unsubscribe', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::unsubscribe'));
 
-    return true;
-});
-
-$app->post('/feed/:feedID/update', function ($feedID) use ($app) {
-    try {
-        Handlers\FeedHandlers::updateFeed($app, $feedID);
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
-    return true;
-})->conditions(array('feedID' => '\d+'));
+// 更新某个订阅
+$app->post('/feed/:feedID/update', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::updateFeed'))
+    ->conditions(array('feedID' => '\d+'));
 
 // 资源的文章列表
-$app->get('/feed/:feedID', function ($feedID) use ($app) {
-    try {
-        Handlers\PostHandlers::listPost($app, $feedID);
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
+$app->get('/feed/:feedID', $routeCallBackDecorator('\FeedWorld\Handlers\PostHandlers::listPost'))
+    ->conditions(array('feedID' => '\d+'));
 
-    return true;
-})->conditions(array('feedID' => '\d+'));
-
-
-$app->post('/feed/:feedID/post/:postID', function ($feedID, $postID) use ($app) {
-    try {
-        Handlers\PostHandlers::changePostStatus($app, $feedID, $postID);
-    } catch (\Exception $e) {
-        \FeedWorld\Helpers\ResponseUtils::responseExceptionWrapper($app, $e);
-    }
-
-    return true;
-})->conditions(array('feedID' => '\d+', 'postID' => '\d+'));
+// 更改某篇文章的状态：设置为已读、取消已读、加星、取消加星
+$app->post('/feed/:feedID/post/:postID', $routeCallBackDecorator('\FeedWorld\Handlers\PostHandlers::changePostStatus'))
+    ->conditions(array('feedID' => '\d+', 'postID' => '\d+'));
 
 $app->run();
