@@ -105,7 +105,7 @@ $app->get('/user/profile', $routeCallBackDecorator('\FeedWorld\Handlers\UserHand
 
 // 资源(订阅)列表
 
-$app->get('/feed', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandler::listFeed'));
+$app->get('/feed', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::listFeed'));
 
 // 新建订阅
 $app->post('/feed/subscribe', function () use ($app) {
