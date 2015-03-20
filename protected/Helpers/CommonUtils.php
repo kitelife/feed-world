@@ -20,7 +20,6 @@ class CommonUtils
     {
         $targetURLResponse = \Requests::get($url, array(), $settings['requests']);
         if (!$targetURLResponse->success) {
-            \FeedWorld\Helpers\ResponseUtils::responseError(\FeedWorld\Helpers\CodeStatus::RESOURCE_NOT_ACCESSIBLE);
             return false;
         }
 

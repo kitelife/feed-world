@@ -146,35 +146,35 @@ class FeedHandlers
         }
         $newFeedData = Helpers\CommonUtils::fetchFeed($oneRow['feed_url'], $app->settings);
         if ($newFeedData === false) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::RESOURCE_NOT_ACCESSIBLE);
             return true;
         }
 
-        if ($newFeedData['updated_date'] > $oneRow['feed_updated']) {
+        $lastFeedUpdated = date("Y-m-d H:i:s", strtotime($oneRow['feed_updated']));
+
+        if ($newFeedData['updated_date'] > $lastFeedUpdated) {
             // 选出原数据中最新一篇post的发布时间
             $selectLatestPostTime = 'SELECT title, publish_date FROM post WHERE feed_id=:feed_id ORDER BY publish_date DESC LIMIT 1';
             $stmt = $app->db->prepare($selectLatestPostTime);
             $stmt->execute(array(':feed_id' => $feedID));
             $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            $latestPostTime = empty($oneRow) ? null : $oneRow['publish_date'];
-            $hasOneRow = empty($oneRow) ? false : true;
+            $hasPost = empty($oneRow) ? false : true;
+            $lastPostTime = $hasPost ? date("Y-m-d H:i:s", strtotime($oneRow['publish_date'])) : null;
 
             $newPosts = array();
             foreach ($newFeedData['post'] as $onePost) {
                 // 这里假设feed中的post是按发布时间从迟到早先后排序的
                 // 如果发布时间和标题都一样，那么之后的就不用比较了（都是之前就已经存储在数据库中了）
-                if ($latestPostTime !== null && $onePost['publish_date'] == $latestPostTime
-                    && $hasOneRow && strcmp($oneRow['title'], $onePost['title']) === 0) {
-                    break;
-                }
-
-                if ($latestPostTime === null
-                    || $onePost['publish_date'] > $latestPostTime
-                    || ($onePost['publish_date'] == $latestPostTime
-                        && strlen($oneRow['title']) !== strlen($onePost['title'])
-                        && strcmp($oneRow['title'], $onePost['title'])
-                    )
-                ) {
+                if ($hasPost) {
+                    if ($onePost['publish_date'] == $lastPostTime && strcmp($oneRow['title'], $onePost['title']) === 0) {
+                        break;
+                    } else if ($onePost['publish_date'] > $lastPostTime
+                        || ($onePost['publish_date'] == $lastPostTime && strcmp($oneRow['title'], $onePost['title']))
+                    ) {
+                        $newPosts[] = $onePost;
+                    }
+                } else {
                     $newPosts[] = $onePost;
                 }
             }
