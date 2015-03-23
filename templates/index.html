@@ -61,6 +61,10 @@
         .feed-unsubscribe {
             margin-left: 8px;
         }
+
+        .badge-has-new {
+            background-color: #5cb85c !important;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +95,7 @@
                         <li v-repeat="feed: feeds" v-on="click: listMyPost(this, $event)"
                             class="list-group-item one-feed {{feed.active ? 'list-group-item-success' : ''}}">
                             <a href="{{feed.site_url}}" target="_blank">{{feed.title}}</a>
-                            <span class="badge">{{feed.unread_count}}</span>
+                            <span class="badge {{feed.has_new ? 'badge-has-new' : ''}}">{{feed.unread_count}}</span>
                             <span class="feed-operation">
                                 <i class="fa fa-refresh {{feed.updating ? 'fa-spin' : '' }} feed-update"
                                    v-on="click: updateFeed(this, $event)"></i>

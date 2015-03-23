@@ -114,6 +114,9 @@ $(function () {
                 });
                 updateFeedReq.done(function(resp) {
                     if (resp.code === 1000) {
+                        if (targetFeed.feed.unread_count < resp.data.unread_count) {
+                            targetFeed.feed.has_new = true;
+                        }
                         targetFeed.feed.unread_count = resp.data.unread_count;
                         if (feedListVM.activeFeed.feed_id === targetFeedID) {
                             getPostsByFeed(targetFeedID);
@@ -138,6 +141,8 @@ $(function () {
                 resp.data[index].active = false;
                 resp.data[index].unread_count = parseInt(ele.unread_count);
                 resp.data[index].updating = false;
+                // has_new 用于在更新feed时，标识此次更新是否有新文章，若有，则以红色的badge显示未读数目
+                resp.data[index].has_new = false;
             });
             feedListVM.feeds = resp.data;
             if (feedListVM.feeds.length) {
