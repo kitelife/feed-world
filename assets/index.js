@@ -37,6 +37,37 @@ $(function () {
         });
     }
 
+    function updateOneFeed(targetFeed) {
+        targetFeed.updating = true;
+        var targetFeedID = targetFeed.feed_id;
+        var updateFeedReq = $.ajax({
+            type: 'post',
+            url: '/feed/' + targetFeedID + '/update',
+            data: {},
+            dataType: 'json'
+        });
+        updateFeedReq.done(function(resp) {
+            if (resp.code === 1000) {
+                if (targetFeed.unread_count < resp.data.unread_count) {
+                    targetFeed.has_new = true;
+                }
+                targetFeed.unread_count = resp.data.unread_count;
+                if (feedListVM.activeFeed.feed_id === targetFeedID) {
+                    getPostsByFeed(targetFeedID);
+                }
+            } else {
+                alertify.log(resp.message, 'error', 5000);
+            }
+            targetFeed.updating = false;
+        });
+    }
+
+    function closureUpdateOneFeed(targetFeed) {
+        return function() {
+            updateOneFeed(targetFeed);
+        };
+    }
+
     /*
      * 取用户信息
      * */
@@ -104,28 +135,7 @@ $(function () {
             updateFeed: function(targetFeed, e) {
                 e.stopPropagation();
 
-                targetFeed.feed.updating = true;
-                var targetFeedID = targetFeed.feed.feed_id;
-                var updateFeedReq = $.ajax({
-                    type: 'post',
-                    url: '/feed/' + targetFeedID + '/update',
-                    data: {},
-                    dataType: 'json'
-                });
-                updateFeedReq.done(function(resp) {
-                    if (resp.code === 1000) {
-                        if (targetFeed.feed.unread_count < resp.data.unread_count) {
-                            targetFeed.feed.has_new = true;
-                        }
-                        targetFeed.feed.unread_count = resp.data.unread_count;
-                        if (feedListVM.activeFeed.feed_id === targetFeedID) {
-                            getPostsByFeed(targetFeedID);
-                        }
-                    } else {
-                        alertify.log(resp.message, 'error', 5000);
-                    }
-                    targetFeed.feed.updating = false;
-                });
+                updateOneFeed(targetFeed.feed);
             }
         }
     });
@@ -135,6 +145,7 @@ $(function () {
         url: '/feed',
         dataType: 'json'
     });
+
     feedListReq.done(function (resp) {
         if (resp.code === 1000) {
             resp.data.forEach(function (ele, index, arr) {
@@ -145,9 +156,15 @@ $(function () {
                 resp.data[index].has_new = false;
             });
             feedListVM.feeds = resp.data;
-            if (feedListVM.feeds.length) {
+            var feedCount = feedListVM.feeds.length;
+            if (feedCount) {
                 getPostsByFeed(feedListVM.feeds[0].feed_id);
                 activeFeed(feedListVM.feeds[0].feed_id);
+            }
+            // 更新feed数据，看看每个feed是否有新的文章
+            for(var index=0; index < feedCount; index++){
+                var targetClosure = closureUpdateOneFeed(feedListVM.feeds[index]);
+                window.setTimeout(targetClosure, 1000 * index);
             }
         } else {
             alertify.log(resp.message, 'error', 5000);
