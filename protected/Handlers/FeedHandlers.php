@@ -154,7 +154,7 @@ class FeedHandlers
 
         if ($newFeedData['updated_date'] > $lastFeedUpdated) {
             // 选出原数据中最新一篇post的发布时间
-            $selectLatestPostTime = 'SELECT title, publish_date FROM post WHERE feed_id=:feed_id ORDER BY post_id DESC LIMIT 1';
+            $selectLatestPostTime = 'SELECT title, publish_date FROM post WHERE feed_id=:feed_id ORDER BY publish_date DESC, post_id DESC LIMIT 1';
             $stmt = $app->db->prepare($selectLatestPostTime);
             $stmt->execute(array(':feed_id' => $feedID));
             $oneRow = $stmt->fetch(\PDO::FETCH_ASSOC);
