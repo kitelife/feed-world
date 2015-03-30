@@ -164,7 +164,7 @@ $(function () {
             // 更新feed数据，看看每个feed是否有新的文章
             for(var index=0; index < feedCount; index++){
                 var targetClosure = closureUpdateOneFeed(feedListVM.feeds[index]);
-                window.setTimeout(targetClosure, 1500 * index);
+                window.setTimeout(targetClosure, 3000 * index);
             }
         } else {
             alertify.log(resp.message, 'error', 5000);
