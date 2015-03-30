@@ -37,7 +37,9 @@ $(function () {
         });
     }
 
-    function updateOneFeed(targetFeed) {
+    function updateTheseFeed(feedList, index) {
+        var targetFeed = feedList[index];
+        
         targetFeed.updating = true;
         var targetFeedID = targetFeed.feed_id;
         var updateFeedReq = $.ajax({
@@ -59,13 +61,12 @@ $(function () {
                 alertify.log(resp.message, 'error', 5000);
             }
             targetFeed.updating = false;
+            
+            index++;
+            if (index < feedList.length) {
+                updateTheseFeed(feedList, index);
+            }
         });
-    }
-
-    function closureUpdateOneFeed(targetFeed) {
-        return function() {
-            updateOneFeed(targetFeed);
-        };
     }
 
     /*
@@ -135,7 +136,7 @@ $(function () {
             updateFeed: function(targetFeed, e) {
                 e.stopPropagation();
 
-                updateOneFeed(targetFeed.feed);
+                updateTheseFeed([targetFeed.feed, ], 0);
             }
         }
     });
@@ -161,11 +162,9 @@ $(function () {
                 getPostsByFeed(feedListVM.feeds[0].feed_id);
                 activeFeed(feedListVM.feeds[0].feed_id);
             }
-            // 更新feed数据，看看每个feed是否有新的文章
-            for(var index=0; index < feedCount; index++){
-                var targetClosure = closureUpdateOneFeed(feedListVM.feeds[index]);
-                window.setTimeout(targetClosure, 3000 * index);
-            }
+            
+            updateTheseFeed(feedListVM.feeds, 0);
+            
         } else {
             alertify.log(resp.message, 'error', 5000);
         }
