@@ -167,10 +167,11 @@ class FeedHandlers
                 // 这里假设feed中的post是按发布时间从迟到早先后排序的
                 // 如果发布时间和标题都一样，那么之后的就不用比较了（都是之前就已经存储在数据库中了）
                 if ($hasPost) {
-                    if ($onePost['publish_date'] == $lastPostTime && strcmp($oneRow['title'], $onePost['title']) === 0) {
+                    $publishDate = date("Y-m-d H:i:s", strtotime($onePost['publish_date']));
+                    if ($publishDate === $lastPostTime && strcmp($oneRow['title'], $onePost['title']) === 0) {
                         break;
-                    } else if ($onePost['publish_date'] > $lastPostTime
-                        || ($onePost['publish_date'] == $lastPostTime && strcmp($oneRow['title'], $onePost['title']))
+                    } else if ($publishDate > $lastPostTime
+                        || ($publishDate === $lastPostTime && strcmp($oneRow['title'], $onePost['title']))
                     ) {
                         $newPosts[] = $onePost;
                     }
