@@ -115,7 +115,7 @@ class FeedHandlers
 
     public static function listFeed($app)
     {
-        $selectFeeds = 'SELECT * FROM feed WHERE user_id = :user_id';
+        $selectFeeds = 'SELECT * FROM feed WHERE user_id = :user_id ORDER BY feed_id';
         $stmt = $app->db->prepare($selectFeeds);
         $stmt->execute(array(':user_id' => $_SESSION['user_id']));
         $feeds = $stmt->fetchAll(\PDO::FETCH_ASSOC);

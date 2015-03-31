@@ -39,6 +39,18 @@ $(function () {
 
     function updateTheseFeed(feedList, index) {
         var targetFeed = feedList[index];
+        var updateNextFeed = function() {
+            var nextIndex = index + 1;
+            if (nextIndex < feedList.length) {
+                updateTheseFeed(feedList, nextIndex);
+            } else {
+                feedListVM.allFeedUpdating = false;
+            }
+        };
+        if (targetFeed.updating === true) {
+            updateNextFeed();
+            return;
+        }
         
         targetFeed.updating = true;
         var targetFeedID = targetFeed.feed_id;
@@ -61,11 +73,7 @@ $(function () {
                 alertify.log(resp.message, 'error', 5000);
             }
             targetFeed.updating = false;
-            
-            index++;
-            if (index < feedList.length) {
-                updateTheseFeed(feedList, index);
-            }
+            updateNextFeed();
         });
     }
 
@@ -106,7 +114,8 @@ $(function () {
         el: '#feed_list',
         data: {
             feeds: [],
-            activeFeed: null
+            activeFeed: null,
+            allFeedUpdating: false
         },
         methods: {
             listMyPost: function (targetFeed, e) {
@@ -136,7 +145,18 @@ $(function () {
             updateFeed: function(targetFeed, e) {
                 e.stopPropagation();
 
-                updateTheseFeed([targetFeed.feed, ], 0);
+                updateTheseFeed([targetFeed.feed], 0);
+            },
+
+            updateAllFeed: function(e) {
+                e.stopPropagation();
+
+                if (feedListVM.allFeedUpdating === true) {
+                    return;
+                }
+
+                feedListVM.allFeedUpdating = true;
+                updateTheseFeed(feedListVM.feeds, 0);
             }
         }
     });
@@ -162,9 +182,6 @@ $(function () {
                 getPostsByFeed(feedListVM.feeds[0].feed_id);
                 activeFeed(feedListVM.feeds[0].feed_id);
             }
-            
-            updateTheseFeed(feedListVM.feeds, 0);
-            
         } else {
             alertify.log(resp.message, 'error', 5000);
         }
