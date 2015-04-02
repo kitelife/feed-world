@@ -14,6 +14,7 @@ $(function () {
                 resp.data.forEach(function (ele, index, arr) {
                     resp.data[index].is_star = parseInt(ele.is_star);
                     resp.data[index].is_read = parseInt(ele.is_read);
+                    resp.data[index].changing = false;
                 });
                 if (feedID === feedListVM.activeFeed.feed_id) {
                     postListVM.posts = resp.data;
@@ -51,7 +52,7 @@ $(function () {
             updateNextFeed();
             return;
         }
-        
+
         targetFeed.updating = true;
         var targetFeedID = targetFeed.feed_id;
         var updateFeedReq = $.ajax({
@@ -196,6 +197,12 @@ $(function () {
             starOrNot: function (targetPost, e) {
                 e.stopPropagation();
 
+                if (targetPost.post.changing === true) {
+                    return;
+                }
+
+                targetPost.post.changing = true;
+
                 var targetPostID = targetPost.post.post_id,
                     setStar = targetPost.post.is_star === 0 ? 1 : 0;
                 var starPostReq = $.ajax({
@@ -212,10 +219,18 @@ $(function () {
                     } else {
                         alertify.log(resp.message, 'error', 5000);
                     }
+
+                    targetPost.post.changing = false;
                 });
             },
             readOrNot: function (targetPost, e) {
                 e.stopPropagation();
+
+                if (targetPost.post.changing === true) {
+                    return;
+                }
+
+                targetPost.post.changing = true;
 
                 var targetPostID = targetPost.post.post_id,
                     setRead = targetPost.post.is_read === 0 ? 1 : 0;
@@ -234,6 +249,8 @@ $(function () {
                     } else {
                         alertify.log(resp.message, 'error', 5000);
                     }
+
+                    targetPost.post.changing = false;
                 });
             },
             toStopPropagation: function(e) {
