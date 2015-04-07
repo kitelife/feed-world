@@ -12,6 +12,8 @@ require './protected/autoload.php';
 date_default_timezone_set('Asia/Shanghai');
 
 session_cache_limiter(false);
+// session缓存30天
+session_cache_expire(60 * 24 * 30);
 session_start();
 
 $app = new \Slim\Slim(require('./protected/settings.php'));
