@@ -224,8 +224,8 @@ class FeedHandlers
             foreach($opmlBody->outline as $outline) {
                 foreach($outline->outline as $childOutline) {
                     $feedList[] = array(
-                        'title' => $childOutline['htmlUrl'],
-                        'site_url' => $childOutline['title'],
+                        'title' => $childOutline['title'],
+                        'site_url' => $childOutline['htmlUrl'],
                         'feed_url' => $childOutline['xmlUrl'],
                         'feed_type' => $childOutline['type'],
                     );
