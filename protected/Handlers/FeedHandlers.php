@@ -216,27 +216,25 @@ class FeedHandlers
             return true;
         }
         try {
-            $feedData = new \SimpleXMLElement($feedsFileInfo['tmp_name'], LIBXML_NOWARNING | LIBXML_NOERROR);
+            $feedData = simplexml_load_file($feedsFileInfo['tmp_name'], 'SimpleXMLElement', LIBXML_NOWARNING | LIBXML_NOERROR);
             //
-            $outlineList = $feedData->opml->body->outline;
+            $opmlBody = $feedData->opml->body;
         } catch(\Exception $e) {
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::WRONG_PARAMETER, '文件解析出错');
             return true;
         }
 
         $feedList = array();
-        if ($outlineList) {
-            foreach($outlineList as $outline) {
-                $childOutlineList = $outline->outline;
-                if ($childOutlineList) {
-                    foreach($childOutlineList as $childOutline) {
-                        $feedList[] = array(
-                            'title' => $childOutline['htmlUrl'],
-                            'site_url' => $childOutline['title'],
-                            'feed_url' => $childOutline['xmlUrl'],
-                            'feed_type' => $childOutline['type'],
-                        );
-                    }
+        foreach($opmlBody->outline as $outline) {
+            $childOutlineList = $outline->outline;
+            if ($childOutlineList) {
+                foreach($childOutlineList as $childOutline) {
+                    $feedList[] = array(
+                        'title' => $childOutline['htmlUrl'],
+                        'site_url' => $childOutline['title'],
+                        'feed_url' => $childOutline['xmlUrl'],
+                        'feed_type' => $childOutline['type'],
+                    );
                 }
             }
         }
