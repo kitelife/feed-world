@@ -80,19 +80,19 @@ class CommonUtils
 
     public static function generateOPML($feedList) {
         $layout = '<?xml version="1.0" encoding="UTF-8"?>
-    <opml version="1.0">
-        <head>
-            <title>订阅列表 - feed-world</title></head>
-        <body>
-            <outline text="默认分类" title="默认分类">%s</outline>
-        </body>
-    </opml>';
+<opml version="1.0">
+    <head>
+        <title>订阅列表 - feed-world</title></head>
+    <body>
+        <outline text="默认分类" title="默认分类">%s</outline>
+    </body>
+</opml>';
         $feedItemList = array();
         $feedItemTemplate = '<outline htmlUrl="%s" title="%s" xmlUrl="%s" type="%s" text="%s"/>';
         foreach($feedList as $k => $feed) {
             $feedItemList[] = sprintf($feedItemTemplate, $feed['site_url'], $feed['title'], $feed['feed_url'], $feed['feed_type'], $feed['title']);
         }
-        $linePrefix = "\n" . str_repeat(' ', 16);
+        $linePrefix = "\n" . str_repeat(' ', 12);
         $opmlOutput = sprintf($layout, $linePrefix . implode($linePrefix, $feedItemList));
         return $opmlOutput;
     }

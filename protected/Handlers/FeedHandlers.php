@@ -204,7 +204,20 @@ class FeedHandlers
     }
 
     public static function importFeedList($app) {
-        var_dump($_FILES);
+        $feedsFileInfo = $_FILES['feedsFile'];
+        if ($feedsFileInfo['error'] !== 0) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::OTHER_EXCEPTION, '上传出错');
+            return true;
+        }
+
+        // 1048576 = 1024 * 1024
+        if ($feedsFileInfo['size'] > 1048576) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::OTHER_EXCEPTION, '文件过大');
+            return true;
+        }
+
+        $feedData = new \SimpleXMLElement($feedsFileInfo['tmp_name'], LIBXML_NOWARNING | LIBXML_NOERROR);
+        var_dump($feedData);
         return true;
     }
 }
