@@ -102,6 +102,6 @@ $app->post('/feed/:feedID/post/:postID', $routeCallBackDecorator('\FeedWorld\Han
     ->conditions(array('feedID' => '\d+', 'postID' => '\d+'));
 
 // 到处订阅列表
-$app->get('/feed/export', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers:exportFeedList'));
+$app->get('/feed/export', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::exportFeedList'));
 
 $app->run();
