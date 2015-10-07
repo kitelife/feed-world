@@ -297,10 +297,10 @@ $(function () {
         methods: {
             uploadOPML: function(e) {
                 $('#feedsFile').ajaxfileupload({
-                    action: '/feed/import',
-                    validate_extensions : true,
-                    valid_extensions : ['opml', 'OPML'],
-                    onComplete: function(resp) {
+                    'action': '/feed/import',
+                    'validate_extensions': true,
+                    'valid_extensions': ['opml', 'OPML'],
+                    'onComplete': function(resp) {
                         if (resp.code === 1000) {
                             alertify.log('成功！', 'success', 1000);
                             setTimeout("window.location.href='/'", 1500);
