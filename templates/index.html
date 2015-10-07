@@ -77,9 +77,9 @@
                     {{user_name}} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                    <li v-on="click: onClick"><a href="#">新增订阅</a></li>
+                    <li v-on="click: newFeedModal"><a href="#">新增订阅</a></li>
                     <li><a href="#">导入</a></li>
-                    <li><a href="#">导出</a></li>
+                    <li><a href="/feed/export">导出</a></li>
                     <li><a href="/user/logout">退出</a></li>
                 </ul>
             </li>

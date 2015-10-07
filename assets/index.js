@@ -88,7 +88,7 @@ $(function () {
             user_name: ''
         },
         methods: {
-            onClick: function (e) {
+            newFeedModal: function (e) {
                 $('#new_feed_modal').modal('show');
             }
         }

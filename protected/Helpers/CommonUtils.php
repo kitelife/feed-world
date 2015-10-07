@@ -77,4 +77,32 @@ class CommonUtils
         }
         return $thisFeed;
     }
+
+    public static function generateOPML($feedList) {
+        $layout = '<?xml version="1.0" encoding="UTF-8"?>
+        <opml version="1.0">
+            <head><title>订阅列表 - feed-world</title></head>
+            <body>
+                <outline text="默认分类" title="默认分类">%s</outline>
+            </body>
+        </opml>';
+        $feedItemList = array();
+        $feedItemTemplate = '<outline htmlUrl="%s" title="%s" xmlUrl="%s" type="%s" text="%s"/>';
+        foreach($feedList as $k => $feed) {
+            $feedItemList[] = sprintf($feedItemTemplate, $feed['site_url'], $feed['title'], $feed['feed_url'], $feed['feed_type'], $feed['title']);
+        }
+        $opmlOutput = sprintf($layout, implode("\n", $feedItemList));
+        return $opmlOutput;
+    }
+
+    public static function downloadFile($fileName, $content) {
+        $fileSize = strlen($content) + 1;
+        //下载文件需要用到的头
+        Header("Content-type: application/octet-stream");
+        Header("Accept-Ranges: bytes");
+        Header("Accept-Length:".$fileSize);
+        Header("Content-Disposition: attachment; filename=".$fileName);
+        //输出文件内容
+        echo $content;
+    }
 }

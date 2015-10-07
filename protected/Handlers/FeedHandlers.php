@@ -191,4 +191,15 @@ class FeedHandlers
         Helpers\ResponseUtils::responseJSON($dataToReturn);
         return true;
     }
+
+    public static function exportFeedList($app) {
+        $selectFeedList = 'SELECT title, site_url, feed_url, feed_type FROM feed WHERE user_id=:user_id';
+        $stmt = $app->db->prepare($selectFeedList);
+        $stmt->execute(array('user_id' => $_SESSION['user_id']));
+        $feeds = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $targetOPML = Helpers\CommonUtils::generateOPML($feeds);
+
+        Helpers\CommonUtils::downloadFile('feeds.opml', $targetOPML);
+        return true;
+    }
 }
