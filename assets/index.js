@@ -298,6 +298,8 @@ $(function () {
             uploadOPML: function(e) {
                 $('input[name="feedsFile"]').ajaxfileupload({
                     action: '/feed/import',
+                    validate_extensions : true,
+                    valid_extensions : ['opml', 'OPML'],
                     onComplete: function(resp) {
                         if (resp.code === 1000) {
                             alertify.log('成功！', 'success', 1000);
