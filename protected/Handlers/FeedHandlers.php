@@ -58,12 +58,12 @@ class FeedHandlers
                 . 'VALUES (:user_id, :title, :site_url, :feed_url, :feed_type, :feed_updated)';
             $stmt = $app->db->prepare($insertNewFeed);
             $stmt->execute(array(
-                ':user_id' => $_SESSION['user_id'],
-                ':title' => $thisFeed['title'],
-                ':site_url' => $thisFeed['link'],
-                ':feed_url' => $thisFeed['feed'],
-                ':feed_type' => $thisFeed['type'],
-                ':feed_updated' => $thisFeed['updated_date'],
+                'user_id' => $_SESSION['user_id'],
+                'title' => $thisFeed['title'],
+                'site_url' => $thisFeed['link'],
+                'feed_url' => $thisFeed['feed'],
+                'feed_type' => $thisFeed['type'],
+                'feed_updated' => $thisFeed['updated_date'],
             ));
             $newFeedID = $app->db->lastInsertId();
             self::insertPosts($thisFeed['post'], $newFeedID, $app);
@@ -215,20 +215,14 @@ class FeedHandlers
             Helpers\ResponseUtils::responseError(Helpers\CodeStatus::OTHER_EXCEPTION, '文件过大');
             return true;
         }
+
+        $feedList = array();
         try {
             $feedData = simplexml_load_file($feedsFileInfo['tmp_name'], 'SimpleXMLElement', LIBXML_NOWARNING | LIBXML_NOERROR);
             //
-            $opmlBody = $feedData->opml->body;
-        } catch(\Exception $e) {
-            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::WRONG_PARAMETER, '文件解析出错');
-            return true;
-        }
-
-        $feedList = array();
-        foreach($opmlBody->outline as $outline) {
-            $childOutlineList = $outline->outline;
-            if ($childOutlineList) {
-                foreach($childOutlineList as $childOutline) {
+            $opmlBody = $feedData->body;
+            foreach($opmlBody->outline as $outline) {
+                foreach($outline->outline as $childOutline) {
                     $feedList[] = array(
                         'title' => $childOutline['htmlUrl'],
                         'site_url' => $childOutline['title'],
@@ -237,8 +231,43 @@ class FeedHandlers
                     );
                 }
             }
+        } catch(\Exception $e) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::WRONG_PARAMETER, '文件解析出错');
+            return true;
         }
-        var_dump($feedList);
+
+        $now = date('Y-m-d H:i:s', time());
+        // 存入数据库
+        $app->db->beginTransaction();
+        try {
+            $selectFeed = 'SELECT COUNT(*) FROM feed WHERE user_id=:user_id AND feed_url=:feed_url';
+            $selectStmt = $app->db->prepare($selectFeed);
+
+            $insertNewFeed = 'INSERT INTO feed (`user_id`, `title`, `site_url`, `feed_url`, `feed_type`, `feed_updated`) '
+                . 'VALUES (:user_id, :title, :site_url, :feed_url, :feed_type, :feed_updated)';
+            $insertStmt = $app->db->prepare($insertNewFeed);
+            foreach ($feedList as $feed) {
+                $selectStmt->execute(array(
+                        'user_id' => $_SESSION['user_id'],
+                        'feed_url' => $feed['feed_url'])
+                );
+                if (intval($selectStmt->fetchColumn()) === 0) {
+                    $insertStmt->execute(array(
+                        'user_id' => $_SESSION['user_id'],
+                        'title' => $feed['title'],
+                        'site_url' => $feed['site_url'],
+                        'feed_url' => $feed['feed_url'],
+                        'feed_type' => $feed['type'],
+                        'feed_updated' => $now,
+                    ));
+                }
+            }
+            $app->db->commit();
+        } catch (\Exception $e) {
+            Helpers\ResponseUtils::responseError(Helpers\CodeStatus::SYSTEM_ERROR);
+            $app->db->rollBack();
+        }
+        Helpers\ResponseUtils::responseJSON(null);
         return true;
     }
 }
