@@ -3,6 +3,21 @@
  */
 $(function () {
 
+    $('#feedsFile').ajaxfileupload({
+        'action': '/feed/import',
+        'validate_extensions': true,
+        'valid_extensions': ['opml', 'OPML'],
+        'onComplete': function(resp) {
+            if (resp.code === 1000) {
+                alertify.log('成功！', 'success', 1000);
+                setTimeout("window.location.href='/'", 1500);
+            } else {
+                alertify.log(resp.message, 'error', 5000);
+            }
+        },
+        'submit_button': $('#uploadOPMLButton')
+    });
+
     function getPostsByFeed(feedID) {
         var postListReq = $.ajax({
             type: 'get',
@@ -285,28 +300,6 @@ $(function () {
                         setTimeout("window.location.href='/'", 1500);
                     } else {
                         alertify.log(resp.message, 'error', 5000);
-                    }
-                });
-            }
-        }
-    });
-
-    var importFeedListModal = new Vue({
-        el: '#import_feedlist_modal',
-        data: {},
-        methods: {
-            uploadOPML: function(e) {
-                $('#feedsFile').ajaxfileupload({
-                    'action': '/feed/import',
-                    'validate_extensions': true,
-                    'valid_extensions': ['opml', 'OPML'],
-                    'onComplete': function(resp) {
-                        if (resp.code === 1000) {
-                            alertify.log('成功！', 'success', 1000);
-                            setTimeout("window.location.href='/'", 1500);
-                        } else {
-                            alertify.log(resp.message, 'error', 5000);
-                        }
                     }
                 });
             }
