@@ -296,7 +296,7 @@ $(function () {
         data: {},
         methods: {
             uploadOPML: function(e) {
-                $('input[name="feedsFile"]').ajaxfileupload({
+                $('#feedsFile').ajaxfileupload({
                     action: '/feed/import',
                     validate_extensions : true,
                     valid_extensions : ['opml', 'OPML'],
