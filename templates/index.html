@@ -166,16 +166,18 @@
                 <h4 class="modal-title" id="importModalLabel">导入</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="/feed/import">
+                <form class="form-horizontal">
                     <div class="form-group">
-                        <input type="file" id="feedsFile">
-                        <p class="help-block">请选择待导入的OPML文件</p>
+                        <div class="col-md-offset-1 col-md-11">
+                            <input type="file" id="feedsFile" name="feedsFile">
+                            <p class="help-block">请选择待导入的OPML文件</p>
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="submit" class="btn btn-primary">上传</button>
+                <button type="button" class="btn btn-primary" v-on="click: uploadOPML">上传</button>
             </div>
         </div>
     </div>
@@ -186,6 +188,7 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="/assets/lib/bootstrap/js/bootstrap.min.js"></script>
 <script src="/assets/lib/alertify/alertify.min.js" type="text/javascript"></script>
+<script src="/assets/lib/jquery.ajaxfileupload.js" type="text/javascript"></script>
 <script src="/assets/lib/vue.min.js"></script>
 <script src="/assets/index.js"></script>
 </body>
