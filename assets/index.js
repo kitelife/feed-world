@@ -3,7 +3,7 @@
  */
 $(function () {
 
-    $('#feedsFile').ajaxfileupload({
+    $('input[name="feedsFile"]').ajaxfileupload({
         'action': '/feed/import',
         'validate_extensions': true,
         'valid_extensions': ['opml', 'OPML'],
