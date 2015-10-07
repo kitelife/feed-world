@@ -90,6 +90,9 @@ $(function () {
         methods: {
             newFeedModal: function (e) {
                 $('#new_feed_modal').modal('show');
+            },
+            importFeedListModal: function(e) {
+                $("#import_feedlist_modal").modal('show');
             }
         }
     });

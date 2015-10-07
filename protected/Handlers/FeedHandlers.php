@@ -202,4 +202,9 @@ class FeedHandlers
         Helpers\CommonUtils::downloadFile('feeds.opml', $targetOPML);
         return true;
     }
+
+    public static function importFeedList($app) {
+        var_dump($_FILES);
+        return true;
+    }
 }

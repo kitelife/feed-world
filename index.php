@@ -101,7 +101,10 @@ $app->get('/feed/:feedID', $routeCallBackDecorator('\FeedWorld\Handlers\PostHand
 $app->post('/feed/:feedID/post/:postID', $routeCallBackDecorator('\FeedWorld\Handlers\PostHandlers::changePostStatus'))
     ->conditions(array('feedID' => '\d+', 'postID' => '\d+'));
 
-// 到处订阅列表
+// 导出订阅列表
 $app->get('/feed/export', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::exportFeedList'));
+
+// 导入订阅列表
+$app->post('/feed/import', $routeCallBackDecorator('\FeedWorld\Handlers\FeedHandlers::importFeedList'));
 
 $app->run();
