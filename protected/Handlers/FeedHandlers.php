@@ -257,7 +257,7 @@ class FeedHandlers
                         'title' => $feed['title'],
                         'site_url' => $feed['site_url'],
                         'feed_url' => $feed['feed_url'],
-                        'feed_type' => $feed['type'],
+                        'feed_type' => $feed['feed_type'],
                         'feed_updated' => $now,
                     ));
                 }
