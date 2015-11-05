@@ -4,7 +4,10 @@
 
 TODO：
 
-- 异步队列化更新
+- 异步队列化更新 （gearman + 协程）
+    + http://www.laruence.com/2015/05/28/3038.html
+    + http://gearman.org/
+    + http://php.net/manual/zh/book.gearman.php
 - 重构前端交互展示
 - 分类订阅
 
