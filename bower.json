@@ -1,0 +1,28 @@
+{
+  "name": "feed-world",
+  "version": "0.0.0",
+  "homepage": "https://github.com/youngsterxyf/feed-world",
+  "authors": [
+    "youngsterxyf <sas.198708@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "assets/lib/"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "alertify": "~0.3.10",
+    "vue": "~1.0.10",
+    "jquery": "~2.1.4",
+    "font-awesome": "~4.5.0",
+    "jQuery.AjaxFileUpload.js": "jQuery.AjaxFileUpload#~1.0.0"
+  }
+}

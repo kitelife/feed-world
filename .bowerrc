@@ -1,0 +1,5 @@
+{
+    "directory": "assets/lib/",
+    "analytics": false,
+    "timeout": 120000
+}
